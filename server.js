@@ -91,6 +91,21 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // API info endpoint
+  if (pathname === '/api' && method === 'GET') {
+    sendJSON(res, 200, {
+      message: 'Welcome to EFS Module 2 Development API',
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      endpoints: {
+        health: '/health',
+        status: '/api/status',
+        info: '/api'
+      }
+    });
+    return;
+  }
+
   // API status endpoint
   if (pathname === '/api/status' && method === 'GET') {
     sendJSON(res, 200, {
@@ -102,18 +117,20 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // Root route - serve API info or redirect to static file
+  // Root route - serve HTML page by default, JSON only for explicit API requests
   if (pathname === '/' && method === 'GET') {
     const acceptHeader = req.headers.accept || '';
+    const userAgent = req.headers['user-agent'] || '';
     
-    if (acceptHeader.includes('application/json')) {
+    // Only serve JSON if explicitly requested via query parameter or specific API request
+    if (parsedUrl.query.format === 'json' || pathname === '/api') {
       sendJSON(res, 200, {
         message: 'Welcome to EFS Module 2 Development API',
         version: '1.0.0',
         environment: process.env.NODE_ENV || 'development'
       });
     } else {
-      // Serve index.html
+      // Always serve the HTML page for browser requests
       const filePath = path.join(__dirname, 'public', 'index.html');
       serveStaticFile(filePath, res);
     }
