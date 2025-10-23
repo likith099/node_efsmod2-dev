@@ -33,16 +33,39 @@ function serveStaticFile(filePath, res) {
   const extname = path.extname(filePath).toLowerCase();
   const contentType = mimeTypes[extname] || 'application/octet-stream';
   
+  console.log(`Attempting to serve file: ${filePath}`);
+  
   fs.readFile(filePath, (err, content) => {
     if (err) {
+      console.log(`Error serving file ${filePath}:`, err.message);
       if (err.code === 'ENOENT') {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('File not found');
+        // If file not found and it's not index.html, try serving index.html (SPA fallback)
+        if (!filePath.endsWith('index.html')) {
+          const indexPath = path.join(__dirname, 'public', 'index.html');
+          console.log(`Fallback to index.html: ${indexPath}`);
+          serveStaticFile(indexPath, res);
+          return;
+        }
+        res.writeHead(404, { 'Content-Type': 'text/html' });
+        res.end(`
+          <!DOCTYPE html>
+          <html>
+          <head><title>404 - Not Found</title></head>
+          <body>
+            <h1>404 - File Not Found</h1>
+            <p>The requested file could not be found.</p>
+            <p>Requested path: ${filePath}</p>
+            <p>Working directory: ${__dirname}</p>
+            <a href="/">Go to Home</a>
+          </body>
+          </html>
+        `);
       } else {
         res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Server Error');
+        res.end('Server Error: ' + err.message);
       }
     } else {
+      console.log(`Successfully serving file: ${filePath}`);
       res.writeHead(200, { 
         'Content-Type': contentType,
         ...securityHeaders
@@ -111,11 +134,20 @@ const server = http.createServer((req, res) => {
 
   // API status endpoint
   if (pathname === '/api/status' && method === 'GET') {
+    const publicPath = path.join(__dirname, 'public');
+    const indexPath = path.join(publicPath, 'index.html');
+    
     sendJSON(res, 200, {
       status: 'running',
       node_version: process.version,
       platform: process.platform,
-      memory_usage: process.memoryUsage()
+      memory_usage: process.memoryUsage(),
+      paths: {
+        __dirname: __dirname,
+        publicPath: publicPath,
+        indexPath: indexPath,
+        indexExists: fs.existsSync(indexPath)
+      }
     });
     return;
   }
@@ -143,24 +175,27 @@ const server = http.createServer((req, res) => {
 
   // Serve static files from public directory
   if (method === 'GET') {
-    const filePath = path.join(__dirname, 'public', pathname);
+    let filePath;
+    
+    // Handle static file requests
+    if (pathname.startsWith('/public/')) {
+      filePath = path.join(__dirname, pathname);
+    } else if (pathname !== '/' && pathname.includes('.')) {
+      // For direct file requests (css, js, images)
+      filePath = path.join(__dirname, 'public', pathname);
+    } else {
+      // For all other routes, serve index.html (SPA behavior)
+      filePath = path.join(__dirname, 'public', 'index.html');
+    }
     
     // Security check - prevent directory traversal
-    if (!filePath.startsWith(path.join(__dirname, 'public'))) {
+    const publicDir = path.join(__dirname, 'public');
+    if (!filePath.startsWith(__dirname)) {
       sendJSON(res, 403, { error: 'Forbidden' });
       return;
     }
     
-    fs.stat(filePath, (err, stats) => {
-      if (err || !stats.isFile()) {
-        sendJSON(res, 404, {
-          error: 'Route not found',
-          path: pathname
-        });
-      } else {
-        serveStaticFile(filePath, res);
-      }
-    });
+    serveStaticFile(filePath, res);
     return;
   }
 
@@ -178,5 +213,27 @@ server.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Node version: ${process.version}`);
+  console.log(`Working directory: ${__dirname}`);
+  console.log(`Public directory: ${path.join(__dirname, 'public')}`);
+  
+  // Check if index.html exists
+  const indexPath = path.join(__dirname, 'public', 'index.html');
+  if (fs.existsSync(indexPath)) {
+    console.log(`✅ index.html found at: ${indexPath}`);
+  } else {
+    console.log(`❌ index.html NOT found at: ${indexPath}`);
+    // List files in directory
+    try {
+      const files = fs.readdirSync(__dirname);
+      console.log('Files in root directory:', files);
+      if (fs.existsSync(path.join(__dirname, 'public'))) {
+        const publicFiles = fs.readdirSync(path.join(__dirname, 'public'));
+        console.log('Files in public directory:', publicFiles);
+      }
+    } catch (err) {
+      console.log('Error listing files:', err.message);
+    }
+  }
+  
   console.log(`Access the application at: http://localhost:${port}`);
 });
