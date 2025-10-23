@@ -1,215 +1,225 @@
-const http = require('http');
-const fs = require('fs');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
 const path = require('path');
-const url = require('url');
-const querystring = require('querystring');
+const fs = require('fs');
+require('dotenv').config();
 
+const app = express();
 const port = process.env.PORT || 3000;
 
-// MIME types for static files
-const mimeTypes = {
-  '.html': 'text/html',
-  '.css': 'text/css',
-  '.js': 'application/javascript',
-  '.json': 'application/json',
-  '.png': 'image/png',
-  '.jpg': 'image/jpeg',
-  '.gif': 'image/gif',
-  '.ico': 'image/x-icon',
-  '.svg': 'image/svg+xml'
-};
-
-// Security headers
-const securityHeaders = {
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'X-XSS-Protection': '1; mode=block',
-  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-  'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval'"
-};
-
-// Helper function to serve static files
-function serveStaticFile(filePath, res) {
-  const extname = path.extname(filePath).toLowerCase();
-  const contentType = mimeTypes[extname] || 'application/octet-stream';
-  
-  console.log(`Attempting to serve file: ${filePath}`);
-  
-  fs.readFile(filePath, (err, content) => {
-    if (err) {
-      console.log(`Error serving file ${filePath}:`, err.message);
-      if (err.code === 'ENOENT') {
-        // If file not found and it's not index.html, try serving index.html (SPA fallback)
-        if (!filePath.endsWith('index.html')) {
-          const indexPath = path.join(__dirname, 'public', 'index.html');
-          console.log(`Fallback to index.html: ${indexPath}`);
-          serveStaticFile(indexPath, res);
-          return;
-        }
-        res.writeHead(404, { 'Content-Type': 'text/html' });
-        res.end(`
-          <!DOCTYPE html>
-          <html>
-          <head><title>404 - Not Found</title></head>
-          <body>
-            <h1>404 - File Not Found</h1>
-            <p>The requested file could not be found.</p>
-            <p>Requested path: ${filePath}</p>
-            <p>Working directory: ${__dirname}</p>
-            <a href="/">Go to Home</a>
-          </body>
-          </html>
-        `);
-      } else {
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Server Error: ' + err.message);
-      }
-    } else {
-      console.log(`Successfully serving file: ${filePath}`);
-      res.writeHead(200, { 
-        'Content-Type': contentType,
-        ...securityHeaders
-      });
-      res.end(content);
+// Security middleware
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      fontSrc: ["'self'", "https:", "data:"]
     }
-  });
-}
-
-// Helper function to send JSON response
-function sendJSON(res, statusCode, data) {
-  res.writeHead(statusCode, { 
-    'Content-Type': 'application/json',
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    ...securityHeaders
-  });
-  res.end(JSON.stringify(data, null, 2));
-}
-
-// Create HTTP server
-const server = http.createServer((req, res) => {
-  const parsedUrl = url.parse(req.url, true);
-  const pathname = parsedUrl.pathname;
-  const method = req.method;
-
-  // Handle CORS preflight requests
-  if (method === 'OPTIONS') {
-    res.writeHead(200, {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization'
-    });
-    res.end();
-    return;
   }
+}));
 
-  // Health check endpoint for Azure
-  if (pathname === '/health' && method === 'GET') {
-    sendJSON(res, 200, {
-      status: 'healthy',
-      timestamp: new Date().toISOString(),
-      uptime: process.uptime()
-    });
-    return;
-  }
+// CORS middleware
+app.use(cors());
 
-  // Application info endpoint
-  if (pathname === '/api' && method === 'GET') {
-    sendJSON(res, 200, {
-      name: 'EFS Module 2 Web Application',
-      version: '1.0.0',
-      type: 'web-application',
-      environment: process.env.NODE_ENV || 'development',
-      runtime: 'Node.js ' + process.version,
-      platform: 'Azure App Service',
-      endpoints: {
-        health: '/health',
-        status: '/api/status',
-        info: '/api'
-      }
-    });
-    return;
-  }
+// Parse JSON bodies
+app.use(express.json());
 
-  // API status endpoint
-  if (pathname === '/api/status' && method === 'GET') {
-    const publicPath = path.join(__dirname, 'public');
-    const indexPath = path.join(publicPath, 'index.html');
-    
-    sendJSON(res, 200, {
-      status: 'running',
-      node_version: process.version,
-      platform: process.platform,
-      memory_usage: process.memoryUsage(),
-      paths: {
-        __dirname: __dirname,
-        publicPath: publicPath,
-        indexPath: indexPath,
-        indexExists: fs.existsSync(indexPath)
-      }
-    });
-    return;
-  }
+// Parse URL-encoded bodies
+app.use(express.urlencoded({ extended: true }));
 
-  // Root route - serve HTML page by default, JSON only for explicit API requests
-  if (pathname === '/' && method === 'GET') {
-    const acceptHeader = req.headers.accept || '';
-    const userAgent = req.headers['user-agent'] || '';
-    
-    // Only serve JSON if explicitly requested via query parameter or specific API request
-    if (parsedUrl.query.format === 'json' || pathname === '/api') {
-      sendJSON(res, 200, {
-        name: 'EFS Module 2 Web Application',
-        version: '1.0.0',
-        type: 'web-application',
-        environment: process.env.NODE_ENV || 'development'
-      });
-    } else {
-      // Always serve the HTML page for browser requests
-      const filePath = path.join(__dirname, 'public', 'index.html');
-      serveStaticFile(filePath, res);
-    }
-    return;
-  }
+// Serve static files from public directory
+app.use(express.static(path.join(__dirname, 'public')));
 
-  // Serve static files from public directory
-  if (method === 'GET') {
-    let filePath;
-    
-    // Handle static file requests
-    if (pathname.startsWith('/public/')) {
-      filePath = path.join(__dirname, pathname);
-    } else if (pathname !== '/' && pathname.includes('.')) {
-      // For direct file requests (css, js, images)
-      filePath = path.join(__dirname, 'public', pathname);
-    } else {
-      // For all other routes, serve index.html (SPA behavior)
-      filePath = path.join(__dirname, 'public', 'index.html');
-    }
-    
-    // Security check - prevent directory traversal
-    const publicDir = path.join(__dirname, 'public');
-    if (!filePath.startsWith(__dirname)) {
-      sendJSON(res, 403, { error: 'Forbidden' });
-      return;
-    }
-    
-    serveStaticFile(filePath, res);
-    return;
-  }
-
-  // Handle other methods
-  sendJSON(res, 405, { error: 'Method not allowed' });
+// Routes
+app.get('/', (req, res) => {
+  // Serve the EFS Module 2 homepage
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Error handling
-server.on('error', (err) => {
-  console.error('Server error:', err);
+// Authentication routes (Azure AD integration)
+app.get('/signin', (req, res) => {
+  // Redirect to Azure AD login
+  res.redirect('/.auth/login/aad');
+});
+
+app.get('/create-account', (req, res) => {
+  // Redirect to Azure AD login (same as sign in for Azure AD)
+  res.redirect('/.auth/login/aad');
+});
+
+app.get('/signout', (req, res) => {
+  // Redirect to Azure AD logout
+  res.redirect('/.auth/logout');
+});
+
+// Profile page route
+app.get('/profile', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'profile.html'));
+});
+
+// Health check endpoint for Azure
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
+// API status endpoint
+app.get('/api/status', (req, res) => {
+  res.json({
+    message: 'Welcome to EFS Module 2 Development Server',
+    status: 'running',
+    environment: process.env.NODE_ENV || 'development',
+    timestamp: new Date().toISOString(),
+    node_version: process.version,
+    platform: process.platform,
+    memory_usage: process.memoryUsage()
+  });
+});
+
+// Application info endpoint
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'EFS Module 2 Web Application',
+    version: '1.0.0',
+    type: 'web-application',
+    environment: process.env.NODE_ENV || 'development',
+    runtime: 'Node.js ' + process.version,
+    platform: 'Azure App Service',
+    endpoints: {
+      health: '/health',
+      status: '/api/status',
+      info: '/api'
+    }
+  });
+});
+
+// API endpoint to check authentication status
+app.get('/api/auth/status', (req, res) => {
+  try {
+    console.log('Auth status check - Headers received:');
+    console.log('x-ms-client-principal:', req.headers['x-ms-client-principal'] ? 'Present' : 'Not present');
+    console.log('x-ms-client-principal-idp:', req.headers['x-ms-client-principal-idp']);
+    console.log('x-ms-client-principal-name:', req.headers['x-ms-client-principal-name']);
+    
+    const clientPrincipal = req.headers['x-ms-client-principal'];
+    const clientPrincipalIdp = req.headers['x-ms-client-principal-idp'];
+    const clientPrincipalName = req.headers['x-ms-client-principal-name'];
+    
+    if (clientPrincipal) {
+      const decoded = Buffer.from(clientPrincipal, 'base64').toString('ascii');
+      const userInfo = JSON.parse(decoded);
+      
+      console.log('Decoded user info:', userInfo);
+      
+      const response = {
+        authenticated: true,
+        user: {
+          id: userInfo.userId || userInfo.sid,
+          name: userInfo.userDetails || clientPrincipalName,
+          email: userInfo.claims?.find(c => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')?.val,
+          provider: clientPrincipalIdp || 'aad'
+        }
+      };
+      
+      console.log('Sending authenticated response:', response);
+      res.json(response);
+    } else {
+      console.log('No authentication headers found, sending unauthenticated response');
+      res.json({
+        authenticated: false,
+        user: null
+      });
+    }
+  } catch (error) {
+    console.error('Auth status error:', error);
+    res.status(500).json({ 
+      error: 'Failed to check authentication status',
+      authenticated: false 
+    });
+  }
+});
+
+// Database health check
+app.get('/api/database/health', async (req, res) => {
+  try {
+    // Placeholder for database health check
+    res.json({
+      success: true,
+      message: 'Database configuration loaded',
+      configured: !!process.env.DATABASE_SERVER,
+      server: process.env.DATABASE_SERVER ? 'configured' : 'not configured',
+      database: process.env.DATABASE_NAME ? 'configured' : 'not configured'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Database health check failed',
+      error: error.message
+    });
+  }
+});
+
+// User profile endpoint (placeholder for Azure AD integration)
+app.get('/api/user/profile', (req, res) => {
+  // In a real implementation, this would get user info from Azure AD
+  res.json({
+    authenticated: false,
+    message: 'User authentication not configured',
+    user: null
+  });
+});
+
+// System information endpoint
+app.get('/api/system/info', (req, res) => {
+  res.json({
+    name: process.env.APP_NAME || 'EFS Module 2 Development Portal',
+    version: process.env.APP_VERSION || '1.0.0',
+    environment: process.env.NODE_ENV || 'development',
+    nodeVersion: process.version,
+    platform: process.platform,
+    uptime: Math.floor(process.uptime()),
+    memory: process.memoryUsage(),
+    timestamp: new Date().toISOString(),
+    features: {
+      authentication: 'Azure AD (configured)',
+      database: 'SQL Server (configured)',
+      session: 'Express Session',
+      security: 'Helmet + CORS'
+    }
+  });
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: 'Something went wrong!',
+    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
+  });
+});
+
+// 404 handler - SPA fallback
+app.use('*', (req, res) => {
+  // For API routes, return JSON 404
+  if (req.originalUrl.startsWith('/api/')) {
+    res.status(404).json({
+      error: 'API route not found',
+      path: req.originalUrl
+    });
+  } else {
+    // For all other routes, serve the main HTML page (SPA behavior)
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  }
 });
 
 // Start server
-server.listen(port, () => {
+app.listen(port, () => {
   console.log(`Server running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`Node version: ${process.version}`);
@@ -222,17 +232,6 @@ server.listen(port, () => {
     console.log(`✅ index.html found at: ${indexPath}`);
   } else {
     console.log(`❌ index.html NOT found at: ${indexPath}`);
-    // List files in directory
-    try {
-      const files = fs.readdirSync(__dirname);
-      console.log('Files in root directory:', files);
-      if (fs.existsSync(path.join(__dirname, 'public'))) {
-        const publicFiles = fs.readdirSync(path.join(__dirname, 'public'));
-        console.log('Files in public directory:', publicFiles);
-      }
-    } catch (err) {
-      console.log('Error listing files:', err.message);
-    }
   }
   
   console.log(`Access the application at: http://localhost:${port}`);

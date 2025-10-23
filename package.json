@@ -1,20 +1,38 @@
 {
   "name": "efsmod2-dev",
   "version": "1.0.0",
-  "description": "Node.js 22 LTS web application for Azure App Service",
+  "description": "EFS Module 2 Web Application for Azure App Service",
   "main": "server.js",
   "engines": {
     "node": "22.x"
   },
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js",
-    "test": "echo \"No tests specified\""
+    "dev": "nodemon server.js",
+    "test": "echo \"No tests specified yet\""
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "dotenv": "^16.3.1",
+    "mssql": "^10.0.1",
+    "@azure/identity": "^4.0.1",
+    "node-fetch": "^2.7.0",
+    "express-session": "^1.17.3",
+    "passport": "^0.7.0",
+    "passport-azure-ad": "^4.3.5",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   },
   "keywords": [
     "nodejs",
+    "express",
     "azure",
-    "web"
+    "web-app",
+    "efs"
   ],
   "author": "",
   "license": "ISC"
