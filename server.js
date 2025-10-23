@@ -91,12 +91,15 @@ const server = http.createServer((req, res) => {
     return;
   }
 
-  // API info endpoint
+  // Application info endpoint
   if (pathname === '/api' && method === 'GET') {
     sendJSON(res, 200, {
-      message: 'Welcome to EFS Module 2 Development API',
+      name: 'EFS Module 2 Web Application',
       version: '1.0.0',
+      type: 'web-application',
       environment: process.env.NODE_ENV || 'development',
+      runtime: 'Node.js ' + process.version,
+      platform: 'Azure App Service',
       endpoints: {
         health: '/health',
         status: '/api/status',
@@ -125,8 +128,9 @@ const server = http.createServer((req, res) => {
     // Only serve JSON if explicitly requested via query parameter or specific API request
     if (parsedUrl.query.format === 'json' || pathname === '/api') {
       sendJSON(res, 200, {
-        message: 'Welcome to EFS Module 2 Development API',
+        name: 'EFS Module 2 Web Application',
         version: '1.0.0',
+        type: 'web-application',
         environment: process.env.NODE_ENV || 'development'
       });
     } else {
