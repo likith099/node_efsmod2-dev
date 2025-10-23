@@ -1,14 +1,14 @@
 {
-  "name": "efsmod2-dev",
+  "name": "flwins2-dev",
   "version": "1.0.0",
-  "description": "EFS Module 2 Web Application for Azure App Service",
-  "main": "server.js",
+  "description": "Basic Node.js web application for Azure App Service",
+  "main": "app.js",
   "engines": {
     "node": "22.x"
   },
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"No tests specified yet\""
   },
   "dependencies": {
@@ -16,13 +16,9 @@
     "cors": "^2.8.5",
     "helmet": "^7.1.0",
     "dotenv": "^16.3.1",
-    "mssql": "^10.0.1",
-    "@azure/identity": "^4.0.1",
-    "node-fetch": "^2.7.0",
-    "express-session": "^1.17.3",
-    "passport": "^0.7.0",
-    "passport-azure-ad": "^4.3.5",
-    "jsonwebtoken": "^9.0.2"
+    "node-fetch": "^3.3.2",
+    "@azure/identity": "^4.4.0",
+    "mssql": "^10.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

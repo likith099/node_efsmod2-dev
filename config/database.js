@@ -1,144 +1,203 @@
 const sql = require('mssql');
+const { DefaultAzureCredential } = require('@azure/identity');
 
-// Database configuration for Azure SQL Database or SQL Server
-const config = {
-    server: process.env.DATABASE_SERVER || 'localhost',
-    database: process.env.DATABASE_NAME || 'EFS_Module2',
-    user: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
-    port: parseInt(process.env.DATABASE_PORT) || 1433,
-    options: {
-        encrypt: true, // Use encryption for Azure SQL Database
-        trustServerCertificate: false, // For Azure SQL Database
-        enableArithAbort: true,
-        instancename: process.env.DATABASE_INSTANCE_NAME, // SQL Server instance name
-        connectionTimeout: 30000,
-        requestTimeout: 30000,
-        pool: {
-            max: 10,
-            min: 0,
-            idleTimeoutMillis: 30000
-        }
-    },
-    // Azure Managed Identity configuration
-    authentication: {
-        type: process.env.DATABASE_AUTH_TYPE || 'default',
-        options: {
-            userName: process.env.DATABASE_USERNAME,
-            password: process.env.DATABASE_PASSWORD
-        }
-    }
+const SQL_SCOPE = 'https://database.windows.net/.default';
+
+const sqlConfig = {
+  server: process.env.SQL_SERVER,
+  database: process.env.SQL_DATABASE,
+  options: {
+    encrypt: true,
+    trustServerCertificate: false
+  }
 };
 
-// Alternative configuration for Azure Managed Identity
-const managedIdentityConfig = {
-    server: process.env.DATABASE_SERVER,
-    database: process.env.DATABASE_NAME,
-    authentication: {
-        type: 'azure-active-directory-msi-vm'
-    },
-    options: {
-        encrypt: true,
-        trustServerCertificate: false,
-        enableArithAbort: true,
-        connectionTimeout: 30000,
-        requestTimeout: 30000
-    }
+let pool = null;
+let credential = null;
+let cachedToken = null;
+
+const hasManagedIdentityConfig = () => {
+  return Boolean(sqlConfig.server && sqlConfig.database && !process.env.SQL_CONNECTION_STRING);
 };
 
-class DatabaseManager {
-    constructor() {
-        this.pool = null;
-        this.isConnected = false;
+const getAccessToken = async () => {
+  if (!hasManagedIdentityConfig()) {
+    return null;
+  }
+
+  if (!credential) {
+    credential = new DefaultAzureCredential();
+  }
+
+  const fresh = await credential.getToken(SQL_SCOPE);
+  cachedToken = {
+    token: fresh.token,
+    expiresOnTimestamp: fresh.expiresOnTimestamp
+  };
+  return cachedToken.token;
+};
+
+const connectWithManagedIdentity = async () => {
+  const token = await getAccessToken();
+  if (!token) {
+    throw new Error('Unable to acquire Azure AD token for SQL Database.');
+  }
+
+  return sql.connect({
+    server: sqlConfig.server,
+    database: sqlConfig.database,
+    options: sqlConfig.options,
+    authentication: {
+      type: 'azure-active-directory-access-token',
+      options: {
+        token
+      }
     }
+  });
+};
 
-    async connect() {
-        try {
-            console.log('Attempting to connect to database...');
-            
-            // Choose configuration based on authentication type
-            const dbConfig = process.env.DATABASE_AUTH_TYPE === 'managed-identity' 
-                ? managedIdentityConfig 
-                : config;
+const connectWithConnectionString = async () => {
+  return sql.connect(process.env.SQL_CONNECTION_STRING);
+};
 
-            this.pool = await sql.connect(dbConfig);
-            this.isConnected = true;
-            
-            console.log('Database connected successfully');
-            return this.pool;
-        } catch (error) {
-            console.error('Database connection failed:', error);
-            this.isConnected = false;
-            throw error;
-        }
-    }
+const getPool = async () => {
+  if (pool && pool.connected) {
+    return pool;
+  }
 
-    async disconnect() {
-        try {
-            if (this.pool) {
-                await this.pool.close();
-                this.isConnected = false;
-                console.log('Database disconnected successfully');
-            }
-        } catch (error) {
-            console.error('Error disconnecting from database:', error);
-            throw error;
-        }
-    }
+  if (!sqlConfig.server && !process.env.SQL_CONNECTION_STRING) {
+    throw new Error('SQL configuration is missing. Provide SQL_SERVER/SQL_DATABASE or SQL_CONNECTION_STRING.');
+  }
 
-    async query(queryText, parameters = {}) {
-        try {
-            if (!this.isConnected) {
-                await this.connect();
-            }
+  pool = process.env.SQL_CONNECTION_STRING
+    ? await connectWithConnectionString()
+    : await connectWithManagedIdentity();
 
-            const request = this.pool.request();
-            
-            // Add parameters to the request
-            Object.keys(parameters).forEach(key => {
-                request.input(key, parameters[key]);
-            });
+  pool.on('error', (err) => {
+    console.error('SQL pool error:', err);
+    pool.close().catch(() => undefined);
+    pool = null;
+  });
 
-            const result = await request.query(queryText);
-            return result;
-        } catch (error) {
-            console.error('Database query failed:', error);
-            throw error;
-        }
-    }
+  return pool;
+};
 
-    async testConnection() {
-        try {
-            const result = await this.query('SELECT 1 as test');
-            return {
-                success: true,
-                message: 'Database connection test successful',
-                data: result.recordset
-            };
-        } catch (error) {
-            return {
-                success: false,
-                message: 'Database connection test failed',
-                error: error.message
-            };
-        }
-    }
+const ensureIntakeTable = async () => {
+  const sqlPool = await getPool();
+  const createTableQuery = `
+    IF NOT EXISTS (SELECT * FROM sys.tables WHERE name = 'IntakeForms' AND schema_id = SCHEMA_ID('dbo'))
+    BEGIN
+      CREATE TABLE dbo.IntakeForms (
+        Id UNIQUEIDENTIFIER NOT NULL DEFAULT NEWSEQUENTIALID() PRIMARY KEY,
+        UserId NVARCHAR(255) NOT NULL,
+        Email NVARCHAR(256) NOT NULL,
+        FirstName NVARCHAR(150) NULL,
+        LastName NVARCHAR(150) NULL,
+        Department NVARCHAR(150) NULL,
+        JobTitle NVARCHAR(150) NULL,
+        OfficeLocation NVARCHAR(150) NULL,
+        WorkPhone NVARCHAR(50) NULL,
+        Address NVARCHAR(500) NULL,
+        City NVARCHAR(150) NULL,
+        State NVARCHAR(50) NULL,
+        ZipCode NVARCHAR(20) NULL,
+        Phone NVARCHAR(50) NULL,
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+        UpdatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+      );
 
-    getConnectionStatus() {
-        return {
-            connected: this.isConnected,
-            poolConnected: this.pool && this.pool.connected,
-            server: config.server,
-            database: config.database
-        };
-    }
-}
+      CREATE INDEX IX_IntakeForms_UserId ON dbo.IntakeForms(UserId);
+      CREATE INDEX IX_IntakeForms_Email ON dbo.IntakeForms(Email);
+    END
+  `;
 
-// Export both the configuration and the manager class
+  await sqlPool.request().query(createTableQuery);
+  return sqlPool;
+};
+
+const upsertIntakeForm = async (form) => {
+  const sqlPool = await ensureIntakeTable();
+  const now = new Date();
+
+  const request = sqlPool.request();
+  request.input('UserId', sql.NVarChar(255), form.userId);
+  request.input('Email', sql.NVarChar(256), form.email);
+  request.input('FirstName', sql.NVarChar(150), form.firstName);
+  request.input('LastName', sql.NVarChar(150), form.lastName);
+  request.input('Department', sql.NVarChar(150), form.department);
+  request.input('JobTitle', sql.NVarChar(150), form.jobTitle);
+  request.input('OfficeLocation', sql.NVarChar(150), form.officeLocation);
+  request.input('WorkPhone', sql.NVarChar(50), form.workPhone);
+  request.input('Address', sql.NVarChar(500), form.address);
+  request.input('City', sql.NVarChar(150), form.city);
+  request.input('State', sql.NVarChar(50), form.state);
+  request.input('ZipCode', sql.NVarChar(20), form.zipCode);
+  request.input('Phone', sql.NVarChar(50), form.phone);
+  request.input('UpdatedAt', sql.DateTime2, now);
+
+  const upsertQuery = `
+    IF EXISTS (SELECT 1 FROM dbo.IntakeForms WHERE UserId = @UserId)
+    BEGIN
+      UPDATE dbo.IntakeForms
+      SET
+        Email = @Email,
+        FirstName = @FirstName,
+        LastName = @LastName,
+        Department = @Department,
+        JobTitle = @JobTitle,
+        OfficeLocation = @OfficeLocation,
+        WorkPhone = @WorkPhone,
+        Address = @Address,
+        City = @City,
+        State = @State,
+        ZipCode = @ZipCode,
+        Phone = @Phone,
+        UpdatedAt = @UpdatedAt
+      WHERE UserId = @UserId;
+    END
+    ELSE
+    BEGIN
+      INSERT INTO dbo.IntakeForms (
+        UserId,
+        Email,
+        FirstName,
+        LastName,
+        Department,
+        JobTitle,
+        OfficeLocation,
+        WorkPhone,
+        Address,
+        City,
+        State,
+        ZipCode,
+        Phone,
+        CreatedAt,
+        UpdatedAt
+      ) VALUES (
+        @UserId,
+        @Email,
+        @FirstName,
+        @LastName,
+        @Department,
+        @JobTitle,
+        @OfficeLocation,
+        @WorkPhone,
+        @Address,
+        @City,
+        @State,
+        @ZipCode,
+        @Phone,
+        @UpdatedAt,
+        @UpdatedAt
+      );
+    END
+  `;
+
+  await request.query(upsertQuery);
+};
+
 module.exports = {
-    config,
-    managedIdentityConfig,
-    DatabaseManager,
-    // Export a singleton instance
-    dbManager: new DatabaseManager()
+  getPool,
+  ensureIntakeTable,
+  upsertIntakeForm
 };
