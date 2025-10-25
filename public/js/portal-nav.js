@@ -85,10 +85,12 @@ class PortalNavigation {
     );
 
     this.triggerButton?.addEventListener("click", () => this.toggleMenu());
-    document.addEventListener("click", (event) => this.handleGlobalClick(event));
+    document.addEventListener("click", (event) =>
+      this.handleGlobalClick(event)
+    );
 
     const logoutButton = this.accountContainer.querySelector(
-      "[data-action=\"logout\"]"
+      '[data-action="logout"]'
     );
     logoutButton?.addEventListener("click", () => {
       this.renderSignedOut();
@@ -103,8 +105,7 @@ class PortalNavigation {
 
     const menu = this.dropdown.closest(".portal-user-menu");
     const isOpen = menu?.dataset.open === "true";
-    const nextState =
-      typeof forceState === "boolean" ? forceState : !isOpen;
+    const nextState = typeof forceState === "boolean" ? forceState : !isOpen;
 
     menu.dataset.open = String(nextState);
     this.triggerButton.setAttribute("aria-expanded", String(nextState));
