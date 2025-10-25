@@ -94,8 +94,7 @@ class PortalNavigation {
     );
     logoutButton?.addEventListener("click", () => {
       this.toggleMenu(false);
-      this.renderSignedOut();
-      window.location.href = "/signout";
+      this.handleLogout();
     });
 
     const profileLink =
@@ -184,6 +183,22 @@ class PortalNavigation {
 
     this.dropdown = null;
     this.triggerButton = null;
+  }
+
+  handleLogout() {
+    // First try the Azure logout endpoint
+    this.renderSignedOut();
+    
+    // Try Azure logout first, with fallback to direct logout
+    window.location.href = "/signout";
+    
+    // Set a timeout to use direct logout if Azure logout gets stuck
+    setTimeout(() => {
+      // Check if we're still on the logout page after 3 seconds
+      if (window.location.pathname.includes('.auth/logout')) {
+        window.location.href = "/logout-direct";
+      }
+    }, 3000);
   }
 
   escapeHtml(value) {

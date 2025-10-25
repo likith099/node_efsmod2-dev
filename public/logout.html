@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signing Out - EFSMOD</title>
+    <link rel="stylesheet" href="/css/portal.css">
+    <style>
+        .logout-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #f5f6f8 0%, rgba(245, 246, 248, 0) 40%);
+        }
+        .logout-card {
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+            text-align: center;
+            max-width: 400px;
+        }
+        .logout-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--portal-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1.5rem;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logout-container">
+        <div class="logout-card">
+            <div class="logout-spinner"></div>
+            <h2>Signing you out...</h2>
+            <p>Please wait while we complete your sign out.</p>
+            <p id="redirect-message" style="display: none;">
+                <a href="/" class="portal-btn portal-btn-primary">Return to Home</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // Clear any remaining auth-related cookies on client side
+        document.cookie.split(";").forEach(function(c) { 
+            var cookieName = c.split("=")[0].trim();
+            if (cookieName.includes('AppService') || cookieName.includes('zumo') || cookieName.includes('Auth')) {
+                document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/';
+                document.cookie = cookieName + '=; expires=Thu, 01 Jan 1970 00:00:01 GMT; path=/; domain=' + window.location.hostname;
+            }
+        });
+
+        // Redirect to home after a short delay
+        setTimeout(() => {
+            document.getElementById('redirect-message').style.display = 'block';
+            // Auto-redirect after 5 seconds
+            setTimeout(() => {
+                window.location.href = '/';
+            }, 2000);
+        }, 1000);
+    </script>
+</body>
+</html>

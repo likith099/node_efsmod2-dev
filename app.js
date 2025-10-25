@@ -69,17 +69,23 @@ app.get("/create-account", (req, res) => {
 });
 
 app.get("/signout", (req, res) => {
-  // Redirect to Azure AD logout
+  // Clear all possible Azure App Service auth cookies
   const authCookies = [
     "AppServiceAuthSession",
-    "AppServiceAuthSessionCookie",
+    "AppServiceAuthSessionCookie", 
     "AppServiceAuthSessionId",
     "AppServiceAuthSessionKey",
     "x-zumo-auth",
+    ".AspNetCore.Cookies",
+    "ARRAffinity",
+    "ARRAffinitySameSite"
   ];
 
+  // Clear cookies with multiple combinations of options to ensure removal
   authCookies.forEach((cookieName) => {
+    res.clearCookie(cookieName);
     res.clearCookie(cookieName, { path: "/" });
+    res.clearCookie(cookieName, { path: "/", domain: req.get("host") });
     res.clearCookie(cookieName, {
       path: "/",
       httpOnly: true,
@@ -90,6 +96,36 @@ app.get("/signout", (req, res) => {
 
   const returnTo = `${getAppBaseUrl(req)}/`;
   res.redirect(`/.auth/logout?post_logout_redirect_uri=${returnTo}`);
+});
+
+// Alternative direct logout route that immediately redirects to home
+app.get("/logout-direct", (req, res) => {
+  // Clear all possible Azure App Service auth cookies
+  const authCookies = [
+    "AppServiceAuthSession",
+    "AppServiceAuthSessionCookie", 
+    "AppServiceAuthSessionId",
+    "AppServiceAuthSessionKey",
+    "x-zumo-auth",
+    ".AspNetCore.Cookies",
+    "ARRAffinity",
+    "ARRAffinitySameSite"
+  ];
+
+  authCookies.forEach((cookieName) => {
+    res.clearCookie(cookieName);
+    res.clearCookie(cookieName, { path: "/" });
+    res.clearCookie(cookieName, { path: "/", domain: req.get("host") });
+    res.clearCookie(cookieName, {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+  });
+
+  // Serve logout confirmation page which will redirect to home
+  res.sendFile(__dirname + "/public/logout.html");
 });
 
 // Serve EFSMOD HTML page
