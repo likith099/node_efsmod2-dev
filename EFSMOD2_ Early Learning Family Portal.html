@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<!-- saved from url=(0014)about:internet -->
+<html lang="en" class="js flexbox flexboxlegacy canvas canvastext webgl no-touch geolocation postmessage no-websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers no-applicationcache svg inlinesvg smil svgclippaths"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=10">
+    
+    <title>EFSMOD2: Early Learning Family Portal</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="./EFSMOD2_ Early Learning Family Portal_files/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- jQuery -->
+    <script src="./EFSMOD2_ Early Learning Family Portal_files/jquery-3.6.0.min.js.download"></script>
+    
+    <!-- Bootstrap JS -->
+    <script src="./EFSMOD2_ Early Learning Family Portal_files/bootstrap.min.js.download"></script>
+
+    <style>
+        /* Custom styles matching the original design */
+        body {
+            background-color: white;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Navigation styles */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px -1px 0px 0px #F1F1F1 inset;
+            background: white;
+            position: fixed;
+            width: 100%;
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        /* Button styles */
+        .btn {
+            box-shadow: none;
+        }
+
+        .navbar-btn {
+            background: #01689B;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            border: none;
+            box-shadow: none;
+            margin-left: 10px;
+        }
+
+        /* Panel styles */
+        .panel-bodys {
+            padding: 15px;
+        }
+
+        /* Responsive styles */
+        @media (min-width: 768px) {
+            .mobileStyle {
+                display: flex;
+                justify-content: center;
+            }
+            .panel-height {
+                min-height: 230px;
+            }
+            .panel-foot {
+                position: absolute;
+                width: 100%;
+                bottom: 0;
+            }
+            .panel-bp {
+                padding-bottom: 0;
+            }
+            .signin {
+                bottom: -100px;
+                height: auto;
+                background: #01689B;
+                padding: 32px;
+                position: absolute;
+                z-index: 1;
+            }
+            .toprem {
+                margin-top: 12rem;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .mobileStyle {
+                display: block;
+            }
+            .toprem {
+                margin-top: -2rem;
+            }
+            .panel-height {
+                min-height: auto;
+                padding-bottom: 15px;
+            }
+            .panel-bp {
+                padding-bottom: 15px;
+            }
+            .signin {
+                height: auto;
+                background: #01689B;
+                padding: 20px;
+                position: relative;
+                z-index: 1;
+            }
+        }
+
+        /* Footer styles */
+        #footer div {
+            margin-bottom: 15px;
+        }
+
+        /* Modal styles */
+        .modal-content {
+            box-shadow: none;
+            border-radius: 3px;
+        }
+    </style>
+
+    <script type="text/javascript">
+        function noBack() { window.history.forward() }
+        noBack();
+        window.onload = noBack;
+        window.onpageshow = function (evt) { if (evt.persisted) noBack() }
+        window.onunload = function () { void (0) }
+    </script>
+</head>
+
+<body id="DocumentBody">
+    <script type="text/javascript">
+        window.top.scrollTo(0, 0);
+    </script>
+
+    <script type="text/javascript">
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
+
+    <!-- Navigation -->
+    <nav>
+        <img class="hidden-xs" src="./EFSMOD2_ Early Learning Family Portal_files/logoNew.png" style="position: relative; padding: 2px 10px 4px 10px; float: left;">
+        <img class="hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" src="./EFSMOD2_ Early Learning Family Portal_files/logoMobile.svg" style="position: relative; padding: 2px 10px 4px 10px; float: left;">
+        <label class="hidden-xs" style="font-family: &#39;High Tower Text&#39;; font-size: 20px; color: #ff0000; position: relative; float: left;"></label>
+        <label class="hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="font-family: &#39;High Tower Text&#39;; font-size: 14px; color: #ff0000; position: relative; float: left;"></label>
+
+        <div style="display:flex">
+            <a href="http://localhost:3000/signin" aria-label="Access the Family Portal sign-in page">
+                <button type="button" class="btn btn-default navbar-btn">
+                    <span class="hidden-xs">
+                        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.2852 3.33464C8.44421 3.33464 6.95182 4.82702 6.95182 6.66797C6.95182 8.50892 8.44421 10.0013 10.2852 10.0013C12.1261 10.0013 13.6185 8.50892 13.6185 6.66797C13.6185 4.82702 12.1261 3.33464 10.2852 3.33464ZM5.28516 6.66797C5.28516 3.90655 7.52373 1.66797 10.2852 1.66797C13.0466 1.66797 15.2852 3.90655 15.2852 6.66797C15.2852 9.42939 13.0466 11.668 10.2852 11.668C7.52373 11.668 5.28516 9.42939 5.28516 6.66797ZM6.95182 15.0013C5.57111 15.0013 4.45182 16.1206 4.45182 17.5013C4.45182 17.9615 4.07873 18.3346 3.61849 18.3346C3.15825 18.3346 2.78516 17.9615 2.78516 17.5013C2.78516 15.2001 4.65064 13.3346 6.95182 13.3346H13.6185C15.9197 13.3346 17.7852 15.2001 17.7852 17.5013C17.7852 17.9615 17.4121 18.3346 16.9518 18.3346C16.4916 18.3346 16.1185 17.9615 16.1185 17.5013C16.1185 16.1206 14.9992 15.0013 13.6185 15.0013H6.95182Z" fill="white"></path>
+                        </svg>
+                    </span>
+                    Sign In
+                </button>
+            </a>
+
+            <a href="http://localhost:3000/status" aria-label="View site status" style="margin-left: 10px;">
+                <button type="button" class="btn btn-default navbar-btn">
+                    <span class="hidden-xs" style="margin-right: 2px;">
+                        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M3 19C3.69137 16.6928 5.46998 16 9.5 16C13.53 16 15.3086 16.6928 16 19" stroke="#fff" stroke-width="1.75" stroke-linecap="round"></path>
+                            <path d="M13 9.5C13 11.433 11.433 13 9.5 13C7.567 13 6 11.433 6 9.5C6 7.567 7.567 6 9.5 6C11.433 6 13 7.567 13 9.5Z" stroke="#fff" stroke-width="1.75"></path>
+                            <path d="M15 6H21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                            <path d="M18 3L18 9" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+                        </svg>
+                    </span>
+                    Site Status
+                </button>
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div id="main" style="padding:65pt 20pt 5pt 20pt; width:100%; display:inline-block; position:relative;">
+        <div style="display:flex; flex-direction: column; position:relative;">
+            <div class="nav navbar-left" style="display:flex;"></div>
+        </div>
+
+        <!-- Hero Section -->
+        <div style="margin: -16pt -20pt 0;">
+            <div style="text-align:center; position: relative;">
+                <img src="./EFSMOD2_ Early Learning Family Portal_files/OELsliderimage.jpg" style="width:100%;">
+                <div class="col-xs-12 col-sm-offset-6 col-sm-4 signin hidden-xs" style="background: #01689B;">
+                    <h2 style="color: #ffffff; font-size: 32px; text-align: left; font-weight: 400; margin-top: 0;">Welcome to <span style="font-weight: 700;">EFSMOD2 Early Learning Family Portal</span></h2>
+                    <h3 style="color: #ffffff; font-size: 20px;margin-bottom: 2rem; text-align: left;">Development Environment Active</h3>
+                    <a href="http://localhost:3000/signin" aria-label="Sign in to the Family Portal" style="background:#FFFFFF; position: relative; height: 48px; width: fit-content; font-weight: 700;border-radius: 3px; display:flex;align-items:center; padding: 0 15px; justify-content: center;box-shadow: none;color:#01689B; border: 1px solid #01689B" role="button">
+                        <span style="font-weight: 400;">Sign In to Portal</span>
+                        <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="#01689B"></path>
+                        </svg>
+                    </a>
+                </div>
+                <br>
+            </div>
+
+            <!-- Bootstrap Container -->
+            <div class="container toprem" style="margin-left: auto; margin-right: auto; margin-bottom: 20pt;">
+                <!-- Mobile Welcome Section -->
+                <div class="row hidden-sm hidden-md hidden-lg hidden-xl hidden-xxl" style="margin: 0 15px 15px;">
+                    <div class="col-xs-12 signin" style="background: #01689B;">
+                        <h2 style="color: #ffffff; font-size: 18px; text-align: left; font-weight: 400; margin-top: 0;">Welcome to <span style="font-weight: 700; font-size: 20px;">EFSMOD2 Early Learning Family Portal</span></h2>
+                        <h3 style="color: #ffffff; font-size: 16px;margin-bottom: 2rem; text-align: left;">Development Environment Active</h3>
+                        <a href="http://localhost:3000/signin" aria-label="Sign in to the Family Portal" style="background:#FFFFFF; position: relative; height: 48px; width: fit-content; font-weight: 700;border-radius: 3px; display:flex;align-items:center; padding: 0 15px; justify-content: center;box-shadow: none;color:#01689B; border: 1px solid #01689B" role="button">
+                            <span style="font-weight: 400;">Sign In to Portal</span>
+                            <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="#01689B"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="row mobileStyle">
+                    <span class="col-xs-12" style="color: #2D2D2D; font-size: 14px; font-weight: 400; margin-bottom: 20px;">
+                        Explore resources, apply for early learning programs, and stay informed about services offered through Florida's Early Learning Family Portal.
+                    </span>
+                </div>
+
+                <!-- Service Panels -->
+                <div class="row mobileStyle">
+                    <!-- Resource & Referral Panel -->
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="panel panel-default" style="border-radius: 4px; height: 100%; position: relative;">
+                            <div style="background-color: #AE0C06; margin: 0pt; height: 4px; text-align: center; border-top-left-radius: 5pt; border-top-right-radius: 5pt;"></div>
+                            <div class="panel-bodys" style="color: #AE0C06; font-size: 20px;padding-top: 20px; padding-bottom: 0;">Resource &amp; Referral</div>
+                            <div class="panel-bodys panel-height" style="color: #2D2D2D; padding-top: 5px; font-weight: 400; font-size: 14px;">
+                                Florida's Child Care Resource and Referral Network or CCR&amp;R helps families locate quality child care and early education programs.
+                                Trained specialists offer information about local child care options and develop customized lists of child care providers based on each family's specific child care needs.
+                                <br>Financial assistance strategies and referrals to other community resources and programs are also available.
+                            </div>
+                            <div class="panel-bodys panel-foot">
+                                <a href="https://www.fldoe.org/schools/early-learning/parents/ccr-r.stml" target="_blank" aria-label="Learn more about CCR&amp;R" class="btn btn-primary" style="background:#AE0C06; position: relative; font-weight: 700;border-radius: 3px; display:flex;align-items:center;justify-content: space-around;box-shadow: none;color:#FFF; border: 1px solid #AE0C06">
+                                    <span style="font-weight: 400; font-size: 13px; text-wrap: wrap;">Learn More About CCR&amp;R</span>
+                                    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- School Readiness Panel -->
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="panel panel-default" style="border-radius: 4px; height: 100%; position: relative;">
+                            <div style="background-color: #01689B; margin: 0pt; height: 4px; text-align: center; border-top-left-radius: 5pt; border-top-right-radius: 5pt;"></div>
+                            <div class="panel-bodys" style="color: #01689B; font-size: 20px;padding-top: 20px; padding-bottom: 0;">School Readiness</div>
+                            <div class="panel-bodys panel-height" style="color: #2D2D2D; padding-top: 5px; font-weight: 400; font-size: 14px;">
+                                Florida's School Readiness Program or SR offers financial assistance to eligible low-income families for early education and
+                                care so they can become financially self-sufficient and their young children can be successful in school in the future.
+                                Services vary based on individual needs and range from extended day care to after-school and school-age care in some instances.
+                            </div>
+                            <div class="panel-bodys panel-foot">
+                                <a class="btn btn-default" aria-label="Apply for School Readiness" href="https://doe-app-p-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" style="background:#01689B; position: relative; font-weight: 700;border-radius: 3px; display:flex;align-items:center;justify-content: space-around;box-shadow: none;color:#FFF; border: 1px solid #01689B">
+                                    <span style="font-weight: 400; font-size: 13px; text-wrap: wrap;">Apply for School Readiness</span>
+                                    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- VPK Panel -->
+                    <div class="col-xs-12 col-sm-4">
+                        <div class="panel panel-default" style="border-radius: 4px; height: 100%; position: relative;">
+                            <div style="background-color: #248641; margin: 0pt; height: 4px; text-align: center; border-top-left-radius: 5pt; border-top-right-radius: 5pt;"></div>
+                            <div class="panel-bodys" style="color: #248641; font-size: 20px;padding-top: 20px; padding-bottom: 0;">Voluntary Prekindergarten (VPK)</div>
+                            <div class="panel-bodys panel-height" style="color: #2D2D2D; padding-top: 5px; font-weight: 400; font-size: 14px;">
+                                Florida's Voluntary Prekindergarten Education Program is a free educational program that prepares 4-year-olds for kindergarten and beyond. Families can choose school-year or summer programs offered by private centers and public schools.
+                            </div>
+                            <div class="panel-bodys panel-bp">
+                                <a class="btn btn-default" aria-label="Apply for VPK" href="https://doe-app-p-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" style="background:#248641; position: relative; font-weight: 700;border-radius: 3px; display:flex;align-items:center;justify-content: space-around;box-shadow: none;color:#FFF; border: 1px solid #248641">
+                                    <span style="font-weight: 400; font-size: 13px; text-wrap: wrap;">Apply for VPK</span>
+                                    <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer" class="container-fluid text-center small" style="font-size: 14px; text-align: center;">
+        <div>
+            Development Environment - EFSMOD2 Early Learning Family Portal
+        </div>
+        <div>
+            This site is best viewed with Microsoft Edge. Download the latest version of <a target="_blank" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
+        </div>
+        <div>
+            Need help? Contact your local early learning coalition for personalised assistance.
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="text/javascript">
+        $('.datetimepicker').on('click', function (e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+    </script>
+
+</body></html>
