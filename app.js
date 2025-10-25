@@ -72,13 +72,13 @@ app.get("/signout", (req, res) => {
   // Clear all possible Azure App Service auth cookies
   const authCookies = [
     "AppServiceAuthSession",
-    "AppServiceAuthSessionCookie", 
+    "AppServiceAuthSessionCookie",
     "AppServiceAuthSessionId",
     "AppServiceAuthSessionKey",
     "x-zumo-auth",
     ".AspNetCore.Cookies",
     "ARRAffinity",
-    "ARRAffinitySameSite"
+    "ARRAffinitySameSite",
   ];
 
   // Clear cookies with multiple combinations of options to ensure removal
@@ -103,13 +103,13 @@ app.get("/logout-direct", (req, res) => {
   // Clear all possible Azure App Service auth cookies
   const authCookies = [
     "AppServiceAuthSession",
-    "AppServiceAuthSessionCookie", 
+    "AppServiceAuthSessionCookie",
     "AppServiceAuthSessionId",
     "AppServiceAuthSessionKey",
     "x-zumo-auth",
     ".AspNetCore.Cookies",
     "ARRAffinity",
-    "ARRAffinitySameSite"
+    "ARRAffinitySameSite",
   ];
 
   authCookies.forEach((cookieName) => {
