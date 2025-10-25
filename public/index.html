@@ -3,99 +3,104 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FL WINS Development Server</title>
-    <link rel="stylesheet" href="/css/flwins-styles.css">
-    <link rel="stylesheet" href="/css/flwins-components.css">
+    <title>EFSMOD Development Environment</title>
+    <link rel="stylesheet" href="/css/portal.css">
     <style>
-        .dev-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: var(--flwins-space-8);
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(180deg, #f5f6f8 0%, rgba(245, 246, 248, 0) 40%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dev-wrapper {
+            width: 100%;
+            max-width: 760px;
+            padding: 0 1.5rem;
         }
         .dev-card {
-            background: var(--flwins-white);
-            padding: var(--flwins-space-8);
-            border-radius: var(--flwins-radius-xl);
-            box-shadow: var(--flwins-shadow-lg);
-            margin-bottom: var(--flwins-space-6);
+            background: #ffffff;
+            border-radius: 0.75rem;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+            padding: 2.5rem;
+        }
+        .dev-card h1 {
+            margin-top: 0;
+            color: var(--portal-blue);
         }
         .dev-status {
-            background: #e8f5e8;
-            border: 2px solid #4CAF50;
-            padding: var(--flwins-space-6);
-            border-radius: var(--flwins-radius-md);
-            margin: var(--flwins-space-6) 0;
+            margin: 1.75rem 0;
+            padding: 1rem 1.25rem;
+            border-radius: 0.6rem;
+            background: rgba(36, 134, 65, 0.12);
+            border: 1px solid rgba(36, 134, 65, 0.4);
         }
-        .dev-info {
-            background: var(--flwins-primary-lighter);
-            border: 2px solid var(--flwins-primary);
-            padding: var(--flwins-space-6);
-            border-radius: var(--flwins-radius-md);
-            margin: var(--flwins-space-6) 0;
+        .dev-links {
+            display: grid;
+            gap: 0.9rem;
+            margin: 2rem 0;
+        }
+        .dev-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.6rem;
+            padding: 0.9rem 1.25rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            color: var(--portal-blue);
+            background: rgba(1, 104, 155, 0.08);
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+        .dev-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(1, 104, 155, 0.15);
+        }
+        .dev-link.primary {
+            background: var(--portal-blue);
+            color: #ffffff;
         }
         .dev-actions {
             display: flex;
-            gap: var(--flwins-space-4);
+            gap: 1rem;
             flex-wrap: wrap;
-            margin: var(--flwins-space-8) 0;
+            margin-top: 2.5rem;
         }
-        .dev-preview-link {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--flwins-primary) 0%, var(--flwins-primary-light) 100%);
-            color: var(--flwins-white);
-            padding: var(--flwins-space-6) var(--flwins-space-8);
-            border-radius: var(--flwins-radius-lg);
+        .dev-actions a {
             text-decoration: none;
-            font-weight: var(--flwins-font-weight-bold);
-            font-size: var(--flwins-font-size-lg);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            text-align: center;
-            min-width: 200px;
+            color: var(--portal-blue);
+            font-weight: 600;
         }
-        .dev-preview-link:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--flwins-shadow-xl);
-            text-decoration: none;
-            color: var(--flwins-white);
+        code {
+            background: rgba(1, 104, 155, 0.1);
+            padding: 0.15rem 0.35rem;
+            border-radius: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="dev-container">
+    <div class="dev-wrapper">
         <div class="dev-card">
-            <h1 class="flwins-text-center flwins-text-primary flwins-mb-6">
-                🚀 FL WINS Development Server
-            </h1>
-            
+            <h1>EFSMOD Development Environment</h1>
+            <p>Welcome to the EFSMOD Early Learning Family Portal sandbox. Use the quick links below to access core experiences and health endpoints while running locally.</p>
+
             <div class="dev-status">
-                <h3 class="flwins-font-semibold flwins-mb-4">✅ Server Status</h3>
-                <p class="flwins-mb-4">Your Node.js application is running successfully!</p>
-                <p><strong>Framework:</strong> Express.js</p>
-                <p><strong>Runtime:</strong> Node.js 22 LTS</p>
-                <p><strong>Target Platform:</strong> Azure App Service</p>
+                <strong>Status:</strong> Application is running on <code>http://localhost:3000</code>
             </div>
+
+            <nav class="dev-links" aria-label="Quick links">
+                <a class="dev-link primary" href="/efsmod.html">View Landing Page</a>
+                <a class="dev-link" href="/profile">Open Profile Dashboard</a>
+                <a class="dev-link" href="/api/status">API Status Endpoint</a>
+                <a class="dev-link" href="/health">Health Check</a>
+            </nav>
 
             <div class="dev-actions">
-                <a href="/flwins.html" class="dev-preview-link">
-                    🏠 View FL WINS Home Page
-                </a>
+                <a href="/" aria-label="Reload the EFSMOD development home">Reload Home</a>
+                <a href="/signin">Sign In</a>
             </div>
-
-            <div class="dev-info">
-            <h3>📡 API Endpoints</h3>
-            <ul>
-                <li><strong>GET /</strong> - Main API endpoint</li>
-                <li><strong>GET /health</strong> - Health check endpoint</li>
-            </ul>
-        </div>
-
-        <div class="api-info">
-            <h3>🛠️ Development Info</h3>
-            <ul>
-                <li><strong>Runtime:</strong> Node.js 22 LTS</li>
-                <li><strong>Framework:</strong> Express.js</li>
-                <li><strong>Deployment Target:</strong> Azure App Service</li>
-            </ul>
         </div>
     </div>
 </body>

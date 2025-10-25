@@ -3,286 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Profile - FL WINS</title>
-    <meta name="description" content="Manage your FL WINS profile and personal information.">
-    <link rel="stylesheet" href="/css/flwins-styles.css">
-    <link rel="stylesheet" href="/css/flwins-components.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <title>My Profile - EFSMOD</title>
+    <meta name="description" content="Manage your EFSMOD profile and personal information.">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-puRlit0nSboPOr/4lk4cCJ6QpJCQIaahXlPBva7b3y8FutS3TO3qFvvbgadtzK13" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/portal.css">
+    <link rel="icon" type="image/png" href="/images/logoNew.png">
 </head>
-<body>
-    <!-- Header -->
-    <header class="flwins-header" role="banner">
-        <div class="flwins-header-top">
-            <div class="flwins-container">
-                <div class="flwins-header-top-content">
-                    <div class="flwins-logo">
-                        <a href="/" aria-label="FL WINS Home">
-                            <img src="/images/FLWinsLogo.png" alt="FL WINS" width="120" height="60">
-                        </a>
-                    </div>
-                    
-                    <!-- Mobile Menu Button -->
-                    <button class="flwins-mobile-menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">
-                        <span class="flwins-hamburger"></span>
-                        <span class="flwins-hamburger"></span>
-                        <span class="flwins-hamburger"></span>
-                    </button>
-                    
-                    <!-- Navigation -->
-                    <nav class="flwins-nav" role="navigation" aria-label="Main navigation">
-                        <ul class="flwins-nav-list">
-                            <li class="flwins-nav-item">
-                                <a href="/" class="flwins-nav-link">Home</a>
-                            </li>
-                            <li class="flwins-nav-item flwins-nav-dropdown">
-                                <button class="flwins-nav-link flwins-dropdown-trigger" aria-expanded="false">
-                                    Partners
-                                    <svg class="flwins-dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                        <path d="M8 10.5L3.5 6H12.5L8 10.5Z"/>
-                                    </svg>
-                                </button>
-                                <ul class="flwins-dropdown-menu" role="menu">
-                                    <li role="none">
-                                        <a href="/partners/careersource" class="flwins-dropdown-link" role="menuitem">CareerSource Florida</a>
-                                    </li>
-                                    <li role="none">
-                                        <a href="/partners/education" class="flwins-dropdown-link" role="menuitem">Department of Education</a>
-                                    </li>
-                                    <li role="none">
-                                        <a href="/partners/children-families" class="flwins-dropdown-link" role="menuitem">Department of Children and Families</a>
-                                    </li>
-                                    <li role="none">
-                                        <a href="/partners/floridacommerce" class="flwins-dropdown-link" role="menuitem">FloridaCommerce</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="flwins-nav-item">
-                                <a href="/services" class="flwins-nav-link">Services</a>
-                            </li>
-                            <li class="flwins-nav-item">
-                                <a href="/learn-more" class="flwins-nav-link">Learn More</a>
-                            </li>
-                        </ul>
-                        
-                        <!-- Account Actions -->
-                        <div class="flwins-nav-actions" id="nav-actions">
-                            <!-- Anonymous users -->
-                            <div id="anonymous-actions">
-                                <a href="/signin" class="flwins-nav-link flwins-nav-signin">Sign In</a>
-                                <a href="/create-account" class="flwins-btn flwins-btn-primary flwins-btn-sm">Create Account</a>
-                            </div>
-                            <!-- Authenticated users -->
-                            <div id="authenticated-actions" style="display: none;">
-                                <div class="flwins-user-dropdown">
-                                    <button class="flwins-profile-btn" id="profile-btn" aria-expanded="false">
-                                        <svg class="flwins-profile-icon" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7.5V5.5C15 4.7 14.3 4 13.5 4H10.5C9.7 4 9 4.7 9 5.5V7.5L3 7V9L9 8.5V18C9 18.6 9.4 19 10 19H14C14.6 19 15 18.6 15 18V8.5L21 9Z"/>
-                                        </svg>
-                                        <span class="flwins-profile-name" id="profile-name">User</span>
-                                        <svg class="flwins-dropdown-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-                                            <path d="M8 10.5L3.5 6H12.5L8 10.5Z"/>
-                                        </svg>
-                                    </button>
-                                    <ul class="flwins-profile-menu" id="profile-menu" role="menu">
-                                        <li role="none">
-                                            <a href="/profile" class="flwins-dropdown-link flwins-nav-link-active" role="menuitem">My Profile</a>
-                                        </li>
-                                        <li role="none">
-                                            <a href="/signout" class="flwins-dropdown-link" role="menuitem">Sign Out</a>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
-                </div>
+<body class="portal-body">
+    <a class="portal-skip" href="#main">Skip to main content</a>
+
+    <nav class="portal-nav" role="navigation" aria-label="Primary navigation">
+        <div class="container portal-nav-inner">
+            <a href="/" class="portal-brand" aria-label="EFSMOD home">
+                <img src="/images/logoNew.png" alt="EFSMOD" class="portal-logo portal-logo-desktop" width="180" height="64">
+                <img src="/images/logoMobile.svg" alt="EFSMOD" class="portal-logo portal-logo-mobile" width="140" height="40">
+            </a>
+
+            <div class="portal-nav-actions">
+                <a href="/signout" class="portal-btn portal-btn-secondary">Sign Out</a>
+                <a href="/" class="portal-btn portal-btn-primary">Back to Portal</a>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <!-- Main Content -->
-    <main role="main" id="main">
-        <!-- Profile Section -->
-        <section class="flwins-profile-section">
-            <div class="flwins-container">
-                <div class="flwins-profile-header">
-                    <h1 class="flwins-profile-title">My Profile</h1>
-                    <p class="flwins-profile-subtitle">Review your account info and complete the common intake form.</p>
+    <main id="main" class="portal-profile-main" role="main">
+        <div class="container">
+            <header class="portal-profile-header">
+                <div class="portal-avatar">
+                    <svg width="42" height="42" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                        <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7.5V5.5C15 4.7 14.3 4 13.5 4H10.5C9.7 4 9 4.7 9 5.5V7.5L3 7V9L9 8.5V18C9 18.6 9.4 19 10 19H14C14.6 19 15 18.6 15 18V8.5L21 9Z" />
+                    </svg>
                 </div>
-                
-                <div class="flwins-profile-content">
-                    <div class="flwins-profile-card">
-                        <div class="flwins-profile-avatar">
-                            <div class="flwins-avatar-circle">
-                                <svg width="48" height="48" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 7.5V5.5C15 4.7 14.3 4 13.5 4H10.5C9.7 4 9 4.7 9 5.5V7.5L3 7V9L9 8.5V18C9 18.6 9.4 19 10 19H14C14.6 19 15 18.6 15 18V8.5L21 9Z"/>
-                                </svg>
-                            </div>
-                            <h2 class="flwins-profile-user-name" id="profile-display-name">Loading...</h2>
-                        </div>
-                        
-                        <div class="flwins-profile-form">
-                            <div class="flwins-form-section">
-                                <h3 class="flwins-form-section-title">Account Information</h3>
-                                <p class="flwins-form-section-note">This information comes from Azure Active Directory.</p>
+                <h1 class="portal-profile-name" id="profile-display-name">Loading...</h1>
+                <p class="portal-section-subtitle">Review your account information and complete the common intake form.</p>
+            </header>
 
-                                <div class="flwins-form-group">
-                                    <label class="flwins-form-label" for="readonly-name">Name</label>
-                                    <input id="readonly-name" class="flwins-form-input" type="text" value="Loading..." readonly>
-                                </div>
+            <section class="portal-card-grid" aria-label="Profile details">
+                <article class="portal-card" aria-labelledby="account-information">
+                    <h2 id="account-information" class="portal-subsection-title">Account Information</h2>
+                    <p class="portal-subsection-note">Information sourced from your Azure Active Directory profile.</p>
 
-                                <div class="flwins-form-group">
-                                    <label class="flwins-form-label" for="readonly-email">Email</label>
-                                    <input id="readonly-email" class="flwins-form-input" type="email" value="Loading..." readonly>
-                                </div>
-
-                                <button id="intake-form-toggle" class="flwins-btn flwins-btn-primary" type="button" aria-controls="intake-form" aria-expanded="false">
-                                    Open Common Intake Form
-                                </button>
-                            </div>
-
-                            <form id="intake-form" class="flwins-form-section" hidden>
-                                <h3 class="flwins-form-section-title">Common Intake Form</h3>
-                                <p class="flwins-form-section-note">Review your details and complete any missing fields. Submissions are stored securely in FL WINS.</p>
-
-                                <div class="flwins-form-row">
-                                    <div class="flwins-form-group">
-                                        <label for="firstName" class="flwins-form-label">First Name</label>
-                                        <input type="text" id="firstName" name="firstName" class="flwins-form-input" required>
-                                    </div>
-                                    <div class="flwins-form-group">
-                                        <label for="lastName" class="flwins-form-label">Last Name</label>
-                                        <input type="text" id="lastName" name="lastName" class="flwins-form-input" required>
-                                    </div>
-                                </div>
-
-                                <div class="flwins-form-group">
-                                    <label for="email" class="flwins-form-label">Email Address</label>
-                                    <input type="email" id="email" name="email" class="flwins-form-input" required readonly>
-                                </div>
-
-                                <div class="flwins-form-group">
-                                    <label for="department" class="flwins-form-label">Department</label>
-                                    <input type="text" id="department" name="department" class="flwins-form-input">
-                                </div>
-
-                                <div class="flwins-form-row">
-                                    <div class="flwins-form-group">
-                                        <label for="jobTitle" class="flwins-form-label">Job Title</label>
-                                        <input type="text" id="jobTitle" name="jobTitle" class="flwins-form-input">
-                                    </div>
-                                    <div class="flwins-form-group">
-                                        <label for="officeLocation" class="flwins-form-label">Office Location</label>
-                                        <input type="text" id="officeLocation" name="officeLocation" class="flwins-form-input">
-                                    </div>
-                                </div>
-
-                                <div class="flwins-form-group">
-                                    <label for="workPhone" class="flwins-form-label">Work Phone</label>
-                                    <input type="tel" id="workPhone" name="workPhone" class="flwins-form-input">
-                                </div>
-
-                                <div class="flwins-form-group">
-                                    <label for="address" class="flwins-form-label">Mailing Address</label>
-                                    <textarea id="address" name="address" class="flwins-form-textarea" rows="3" placeholder="Enter your address"></textarea>
-                                </div>
-
-                                <div class="flwins-form-row">
-                                    <div class="flwins-form-group">
-                                        <label for="city" class="flwins-form-label">City</label>
-                                        <input type="text" id="city" name="city" class="flwins-form-input" placeholder="Enter city">
-                                    </div>
-                                    <div class="flwins-form-group">
-                                        <label for="state" class="flwins-form-label">State</label>
-                                        <select id="state" name="state" class="flwins-form-select">
-                                            <option value="">Select State</option>
-                                            <option value="FL">Florida</option>
-                                            <option value="AL">Alabama</option>
-                                            <option value="GA">Georgia</option>
-                                        </select>
-                                    </div>
-                                    <div class="flwins-form-group">
-                                        <label for="zipCode" class="flwins-form-label">ZIP Code</label>
-                                        <input type="text" id="zipCode" name="zipCode" class="flwins-form-input" placeholder="Enter ZIP code">
-                                    </div>
-                                </div>
-
-                                <div class="flwins-form-group">
-                                    <label for="phone" class="flwins-form-label">Primary Phone Number</label>
-                                    <input type="tel" id="phone" name="phone" class="flwins-form-input" placeholder="Enter phone number">
-                                </div>
-
-                                <div class="flwins-form-actions">
-                                    <button type="submit" class="flwins-btn flwins-btn-primary">Submit Intake Form</button>
-                                    <button type="button" class="flwins-btn flwins-btn-secondary" id="intake-form-cancel">Cancel</button>
-                                </div>
-                            </form>
-                        </div>
+                    <div class="portal-field-group">
+                        <label for="readonly-name" class="portal-label">Name</label>
+                        <input id="readonly-name" class="portal-input" type="text" value="Loading..." readonly>
                     </div>
-                </div>
-            </div>
-        </section>
+
+                    <div class="portal-field-group">
+                        <label for="readonly-email" class="portal-label">Email</label>
+                        <input id="readonly-email" class="portal-input" type="email" value="Loading..." readonly>
+                    </div>
+
+                    <button id="intake-form-toggle" class="portal-btn portal-btn-primary" type="button" aria-controls="intake-form" aria-expanded="false">
+                        Open Common Intake Form
+                    </button>
+                </article>
+
+                <article class="portal-card" aria-labelledby="common-intake-form">
+                    <h2 id="common-intake-form" class="portal-subsection-title">Common Intake Form</h2>
+                    <p class="portal-subsection-note">Review your details and complete any missing information. Submissions are stored securely in EFSMOD.</p>
+
+                    <form id="intake-form" hidden>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="firstName" class="portal-label">First Name</label>
+                                <input type="text" id="firstName" name="firstName" class="portal-input" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="lastName" class="portal-label">Last Name</label>
+                                <input type="text" id="lastName" name="lastName" class="portal-input" required>
+                            </div>
+                        </div>
+
+                        <div class="portal-field-group">
+                            <label for="email" class="portal-label">Email Address</label>
+                            <input type="email" id="email" name="email" class="portal-input" required readonly>
+                        </div>
+
+                        <div class="portal-field-group">
+                            <label for="department" class="portal-label">Department</label>
+                            <input type="text" id="department" name="department" class="portal-input">
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="jobTitle" class="portal-label">Job Title</label>
+                                <input type="text" id="jobTitle" name="jobTitle" class="portal-input">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="officeLocation" class="portal-label">Office Location</label>
+                                <input type="text" id="officeLocation" name="officeLocation" class="portal-input">
+                            </div>
+                        </div>
+
+                        <div class="portal-field-group">
+                            <label for="workPhone" class="portal-label">Work Phone</label>
+                            <input type="tel" id="workPhone" name="workPhone" class="portal-input">
+                        </div>
+
+                        <div class="portal-field-group">
+                            <label for="address" class="portal-label">Mailing Address</label>
+                            <textarea id="address" name="address" class="portal-textarea" rows="3" placeholder="Enter your address"></textarea>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="city" class="portal-label">City</label>
+                                <input type="text" id="city" name="city" class="portal-input" placeholder="Enter city">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="state" class="portal-label">State</label>
+                                <select id="state" name="state" class="portal-select">
+                                    <option value="">Select State</option>
+                                    <option value="FL">Florida</option>
+                                    <option value="AL">Alabama</option>
+                                    <option value="GA">Georgia</option>
+                                    <option value="SC">South Carolina</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="zipCode" class="portal-label">ZIP Code</label>
+                                <input type="text" id="zipCode" name="zipCode" class="portal-input" placeholder="Enter ZIP code">
+                            </div>
+                        </div>
+
+                        <div class="portal-field-group">
+                            <label for="phone" class="portal-label">Mobile Phone</label>
+                            <input type="tel" id="phone" name="phone" class="portal-input">
+                        </div>
+
+                        <div class="portal-form-actions">
+                            <button type="submit" class="portal-btn portal-btn-primary">Submit Intake Form</button>
+                            <button type="button" id="intake-form-cancel" class="portal-btn portal-btn-secondary">Cancel</button>
+                        </div>
+                    </form>
+                </article>
+            </section>
+        </div>
     </main>
 
-    <!-- Footer -->
-    <footer class="flwins-footer" role="contentinfo">
-        <div class="flwins-container">
-            <div class="flwins-footer-content">
-                <div class="flwins-footer-section">
-                    <div class="flwins-footer-logo">
-                        <img src="/images/FLWinsLogo.png" alt="FL WINS" width="120" height="60">
-                    </div>
-                    <p class="flwins-footer-description">
-                        Florida's Workforce Innovation Network System connecting job seekers, employers, and training providers across the state.
-                    </p>
-                </div>
-                
-                <div class="flwins-footer-section">
-                    <h3 class="flwins-footer-title">Services</h3>
-                    <ul class="flwins-footer-links">
-                        <li><a href="/services/job-search">Job Search</a></li>
-                        <li><a href="/services/training">Training Programs</a></li>
-                        <li><a href="/services/employers">Employer Services</a></li>
-                        <li><a href="/services/counseling">Career Counseling</a></li>
-                    </ul>
-                </div>
-                
-                <div class="flwins-footer-section">
-                    <h3 class="flwins-footer-title">Partners</h3>
-                    <ul class="flwins-footer-links">
-                        <li><a href="/partners/careersource">CareerSource Florida</a></li>
-                        <li><a href="/partners/education">Department of Education</a></li>
-                        <li><a href="/partners/children-families">Department of Children and Families</a></li>
-                        <li><a href="/partners/floridacommerce">FloridaCommerce</a></li>
-                    </ul>
-                </div>
-                
-                <div class="flwins-footer-section">
-                    <h3 class="flwins-footer-title">Resources</h3>
-                    <ul class="flwins-footer-links">
-                        <li><a href="/about">About FL WINS</a></li>
-                        <li><a href="/contact">Contact Us</a></li>
-                        <li><a href="/help">Help & Support</a></li>
-                        <li><a href="/accessibility">Accessibility</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="flwins-footer-bottom">
-                <div class="flwins-footer-legal">
-                    <p>&copy; 2024 State of Florida. All rights reserved.</p>
-                    <ul class="flwins-footer-legal-links">
-                        <li><a href="/privacy">Privacy Policy</a></li>
-                        <li><a href="/terms">Terms of Use</a></li>
-                        <li><a href="/accessibility">Accessibility Statement</a></li>
-                    </ul>
-                </div>
-            </div>
+    <footer class="portal-footer" role="contentinfo">
+        <div class="container text-center">
+            <p class="portal-footer-title">EFSMOD Early Learning Family Portal</p>
+            <p>Need help? Contact your local early learning coalition for personalised assistance.</p>
         </div>
     </footer>
 
-    <!-- JavaScript -->
-    <script src="/js/flwins-main.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-pPRlTyTX0bYKT1eZq9VHtV6nRvWmvMRGsiE9zraFMvx6bMpiKFFitvolG/G5hgbf" crossorigin="anonymous" defer></script>
     <script src="/js/profile.js" defer></script>
 </body>
 </html>
