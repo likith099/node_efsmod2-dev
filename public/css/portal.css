@@ -87,6 +87,102 @@
     gap: 0.75rem;
 }
 
+.portal-account-actions {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.portal-user-menu {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.portal-user-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #ffffff;
+    color: var(--portal-blue);
+    border: 1px solid rgba(1, 104, 155, 0.25);
+    border-radius: 999px;
+    padding: 0.45rem 0.9rem 0.45rem 0.45rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.portal-user-trigger:hover,
+.portal-user-trigger:focus-visible {
+    border-color: var(--portal-blue);
+    box-shadow: 0 6px 18px rgba(1, 104, 155, 0.18);
+    transform: translateY(-1px);
+}
+
+.portal-user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(1, 104, 155, 0.12);
+    color: var(--portal-blue);
+}
+
+.portal-user-name {
+    font-size: 0.95rem;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.portal-user-caret {
+    color: var(--portal-blue);
+}
+
+.portal-user-dropdown {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 180px;
+    background: #ffffff;
+    border-radius: 0.6rem;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.15);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    z-index: 1200;
+}
+
+.portal-user-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    border: none;
+    background: transparent;
+    color: var(--portal-blue);
+    font-weight: 600;
+    border-radius: 0.45rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.portal-user-link:hover,
+.portal-user-link:focus-visible {
+    background: rgba(1, 104, 155, 0.1);
+    color: var(--portal-blue);
+}
+
+.portal-user-link[type="button"] {
+    text-align: left;
+}
+
 .portal-btn {
     display: inline-flex;
     align-items: center;

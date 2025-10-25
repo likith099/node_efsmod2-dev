@@ -23,8 +23,8 @@ app.use(express.json());
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from public directory
-app.use(express.static("public"));
+// Serve static files from public directory without auto-serving index.html
+app.use(express.static("public", { index: false }));
 
 // Ensure database schema (best effort)
 if (process.env.SQL_SERVER || process.env.SQL_CONNECTION_STRING) {
@@ -70,6 +70,24 @@ app.get("/create-account", (req, res) => {
 
 app.get("/signout", (req, res) => {
   // Redirect to Azure AD logout
+  const authCookies = [
+    "AppServiceAuthSession",
+    "AppServiceAuthSessionCookie",
+    "AppServiceAuthSessionId",
+    "AppServiceAuthSessionKey",
+    "x-zumo-auth",
+  ];
+
+  authCookies.forEach((cookieName) => {
+    res.clearCookie(cookieName, { path: "/" });
+    res.clearCookie(cookieName, {
+      path: "/",
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
+  });
+
   res.redirect("/.auth/logout");
 });
 

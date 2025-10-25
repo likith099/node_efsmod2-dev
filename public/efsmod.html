@@ -19,14 +19,16 @@
                 <img src="/images/logoMobile.svg" alt="Early Learning Family Portal" class="portal-logo portal-logo-mobile" width="140" height="40">
             </a>
             <div class="portal-nav-actions">
-                <a href="/signin" class="portal-btn portal-btn-primary" aria-label="Access the family portal sign-in page">
-                    <span class="portal-btn-icon" aria-hidden="true">
-                        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M10.2852 3.33464C8.44421 3.33464 6.95182 4.82702 6.95182 6.66797C6.95182 8.50892 8.44421 10.0013 10.2852 10.0013C12.1261 10.0013 13.6185 8.50892 13.6185 6.66797C13.6185 4.82702 12.1261 3.33464 10.2852 3.33464ZM5.28516 6.66797C5.28516 3.90655 7.52373 1.66797 10.2852 1.66797C13.0466 1.66797 15.2852 3.90655 15.2852 6.66797C15.2852 9.42939 13.0466 11.668 10.2852 11.668C7.52373 11.668 5.28516 9.42939 5.28516 6.66797ZM6.95182 15.0013C5.57111 15.0013 4.45182 16.1206 4.45182 17.5013C4.45182 17.9615 4.07873 18.3346 3.61849 18.3346C3.15825 18.3346 2.78516 17.9615 2.78516 17.5013C2.78516 15.2001 4.65064 13.3346 6.95182 13.3346H13.6185C15.9197 13.3346 17.7852 15.2001 17.7852 17.5013C17.7852 17.9615 17.4121 18.3346 16.9518 18.3346C16.4916 18.3346 16.1185 17.9615 16.1185 17.5013C16.1185 16.1206 14.9992 15.0013 13.6185 15.0013H6.95182Z" fill="currentColor"></path>
-                        </svg>
-                    </span>
-                    Sign In
-                </a>
+                <div id="portal-account-actions" class="portal-account-actions" data-state="signed-out">
+                    <a href="/signin" class="portal-btn portal-btn-primary" aria-label="Access the family portal sign-in page" data-role="signin-link">
+                        <span class="portal-btn-icon" aria-hidden="true">
+                            <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M10.2852 3.33464C8.44421 3.33464 6.95182 4.82702 6.95182 6.66797C6.95182 8.50892 8.44421 10.0013 10.2852 10.0013C12.1261 10.0013 13.6185 8.50892 13.6185 6.66797C13.6185 4.82702 12.1261 3.33464 10.2852 3.33464ZM5.28516 6.66797C5.28516 3.90655 7.52373 1.66797 10.2852 1.66797C13.0466 1.66797 15.2852 3.90655 15.2852 6.66797C15.2852 9.42939 13.0466 11.668 10.2852 11.668C7.52373 11.668 5.28516 9.42939 5.28516 6.66797ZM6.95182 15.0013C5.57111 15.0013 4.45182 16.1206 4.45182 17.5013C4.45182 17.9615 4.07873 18.3346 3.61849 18.3346C3.15825 18.3346 2.78516 17.9615 2.78516 17.5013C2.78516 15.2001 4.65064 13.3346 6.95182 13.3346H13.6185C15.9197 13.3346 17.7852 15.2001 17.7852 17.5013C17.7852 17.9615 17.4121 18.3346 16.9518 18.3346C16.4916 18.3346 16.1185 17.9615 16.1185 17.5013C16.1185 16.1206 14.9992 15.0013 13.6185 15.0013H6.95182Z" fill="currentColor"></path>
+                            </svg>
+                        </span>
+                        Sign In
+                    </a>
+                </div>
                 <a href="/api/status" class="portal-btn portal-btn-secondary" aria-label="View application status endpoint">
                     <span class="portal-btn-icon" aria-hidden="true">
                         <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,5 +138,6 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-pPRlTyTX0bYKT1eZq9VHtV6nRvWmvMRGsiE9zraFMvx6bMpiKFFitvolG/G5hgbf" crossorigin="anonymous" defer></script>
+    <script src="/js/portal-nav.js" defer></script>
 </body>
 </html>
