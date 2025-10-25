@@ -1,252 +1,84 @@
-# EFS Module 2 Development Portal
+# EFSMOD2 Early Learning Family Portal (Web Experience)
 
-A comprehensive Node.js 22 LTS web application for Azure App Service deployment with Azure Active Directory authentication, SQL Server database integration, and Early Learning Family Portal-inspired UI design.
+A Node.js 22 LTS **web application** that recreates the Early Learning Family Portal look and feel for Azure App Service. This project focuses on serving rich HTML content, Azure AD authentication hand-offs, and friendly status/error pages&mdash;no API surface is exposed.
 
-## 🚀 Features
+## ✨ Highlights
+- **Express.js web server** with security headers (Helmet) and Azure-friendly middleware
+- **Static site delivery** of the EFSMOD2 landing page plus branded status/404/500 pages
+- **Azure AD integration links** for sign-in, sign-out, and account creation flows
+- **Tenant-aware auth helpers** with lightweight `/api/auth/status` and `/api/profile`
+- **Azure App Service ready**: `/health` text probe and `status.html` for human checks
+- **Responsive design** inspired by Florida's Early Learning Family Portal
 
-### Core Application
-- **Express.js Web Server** - Robust server architecture with middleware support
-- **Azure App Service Optimized** - Configured for seamless cloud deployment
-- **Early Learning Portal UI** - Professional, responsive design with modern interface
-- **Single Page Application** - Client-side routing with fallback support
+## 🗂️ Project Structure
+```
+node_efsmod2-dev/
+├── app.js                 # Express web server entry point
+├── package.json           # Node.js 22 runtime + scripts
+├── web.config             # Azure App Service configuration
+├── public/
+│   ├── efsmod.html        # Main landing page
+│   ├── status.html        # Human-readable status page
+│   ├── 404.html           # Branded not-found page
+│   ├── 500.html           # Branded error page
+│   └── assets (images)
+└── README.md              # This guide
+```
 
-### Authentication & Security
-- **Azure Active Directory Integration** - Enterprise-grade authentication
-- **User Profile Management** - Comprehensive user information handling
-- **Security Middleware** - Helmet.js for security headers, CORS support
-- **Session Management** - Express sessions with secure configuration
-
-### Database Integration
-- **SQL Server Support** - Full database connectivity with Azure SQL Database
-- **Azure Managed Identity** - Secure database authentication without credentials
-- **Connection Pooling** - Optimized database performance
-- **Health Monitoring** - Database connection status tracking
-
-### API Architecture
-- **RESTful Endpoints** - Comprehensive API structure
-- **Health Check System** - Multiple health monitoring endpoints
-- **Error Handling** - Centralized error management
-- **Logging Support** - Configurable logging levels
-
-## 🛠️ Development Setup
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js 22 LTS
-- npm or yarn package manager
-- Azure account (for deployment)
-- SQL Server or Azure SQL Database (optional)
+- Node.js **22.x** (matching Azure App Service Node 22 LTS)
+- npm (bundled with Node.js)
+- Optional configuration:
+	- `AZURE_AD_CLIENT_ID` (defaults to `84b2dfe9-f72d-4f93-a55d-08e5735bf2a5`)
+	- `AZURE_AD_TENANT_ID` to pin a specific Azure AD tenant (defaults to `common`)
+	- `AZURE_AD_SCOPES` to customize requested OAuth scopes (`openid profile email offline_access`)
+	- `AZURE_AD_REDIRECT_PATH` if you host the callback somewhere other than `/auth/callback`
 
-### Installation
-
-1. **Clone and install dependencies:**
-   ```bash
-   git clone [repository-url]
-   cd efsmod2-dev
-   npm install
-   ```
-
-2. **Configure environment variables:**
-   Copy `.env` file and update configuration:
-   ```bash
-   # Application Settings
-   NODE_ENV=development
-   PORT=3000
-   APP_NAME=EFS Module 2 Development Portal
-   
-   # Azure AD Configuration
-   AZURE_CLIENT_ID=your-azure-client-id
-   AZURE_CLIENT_SECRET=your-azure-client-secret
-   AZURE_TENANT_ID=your-azure-tenant-id
-   
-   # Database Configuration (optional)
-   DATABASE_SERVER=your-server.database.windows.net
-   DATABASE_NAME=EFS_Module2
-   DATABASE_USERNAME=your-username
-   DATABASE_PASSWORD=your-password
-   ```
-
-3. **Start development server:**
-   ```bash
-   npm run dev
-   ```
-
-4. **Access the application:**
-   - Local: http://localhost:3000
-   - Azure: https://your-app-name.azurewebsites.net
-
-## 🏗️ Project Architecture
-
-### Directory Structure
+### Install & Run Locally
+```pwsh
+npm install
+npm run dev
 ```
-efsmod2-dev/
-├── server.js              # Main Express application server
-├── package.json           # Dependencies and npm scripts
-├── web.config            # Azure App Service IIS configuration
-├── .env                  # Environment variables (development)
-├── config/
-│   └── database.js       # Database configuration and connection manager
-├── public/               # Static web assets
-│   ├── index.html        # Main application page with authentication
-│   ├── profile.html      # User profile page
-│   ├── styles.css        # Application styles and responsive design
-│   ├── app.js           # Legacy JavaScript (preserved)
-│   └── app-auth.js      # Enhanced JavaScript with authentication
-└── sample project/       # Reference implementation
-    └── [sample files]    # Enterprise-grade example structure
+Visit `http://localhost:3000` to load the EFSMOD2 landing page.
+
+### Production Run (local)
+```pwsh
+npm start
 ```
 
-### Key Components
+## 🔐 Authentication Links
+The application relies on Azure App Service authentication plus direct Azure AD authorization when needed. Routes of interest:
 
-#### Server Architecture (`server.js`)
-- **Express.js Setup** - Middleware configuration, static serving, security
-- **Authentication Routes** - Azure AD integration endpoints
-- **API Endpoints** - Comprehensive REST API structure
-- **Error Handling** - Centralized error management
-- **Health Monitoring** - Multiple system health checks
+- `GET /signin` → Redirects to the Microsoft login page using `AZURE_AD_CLIENT_ID`. Pass `?tenant=<tenantId>` to override the default tenant (falls back to `AZURE_AD_TENANT_ID` or `common`). Optional query parameters `prompt`, `state`, and `login_hint` are forwarded to Microsoft.
+- `GET /create-account` → Matches `/signin` behavior for convenience.
+- `GET /signout` → Forwards to the built-in `/.auth/logout` endpoint.
+- `GET /auth/callback` → Callback view that now confirms your session status by querying `/api/auth/status`.
 
-#### Frontend Architecture
-- **Responsive Design** - Mobile-first, professional interface
-- **Authentication Manager** - Client-side auth status management
-- **Dynamic Navigation** - Context-aware navigation based on auth status
-- **API Integration** - Seamless backend communication
+### Authentication APIs
+- `GET /api/auth/status` → Returns `{ authenticated: boolean, user?: {...} }` by calling Azure App Service's `/.auth/me` endpoint.
+- `GET /api/profile` → Returns `{ authenticated: true, profile, claims }` with the raw claims provided by Azure AD. Responds with HTTP 401 when no session is present.
 
-#### Database Layer (`config/database.js`)
-- **Connection Management** - Pooled connections with retry logic
-- **Azure Integration** - Support for Managed Identity authentication
-- **Health Monitoring** - Connection status and performance tracking
-- **Error Handling** - Comprehensive database error management
+These minimal APIs are designed for client-side experiences (e.g., updating the portal header) and mirror the behavior in the reference sample app.
 
-## 🔧 API Endpoints
+## 🏥 Health & Status
+- `GET /health` returns plain text `healthy` for Azure health probes.
+- `GET /status` renders a friendly HTML summary for manual checks.
 
-### Core Application
-- `GET /` - Main application page
-- `GET /health` - Application health status
-- `GET /api/status` - Detailed system status
-- `GET /api` - Application information and metadata
+## 🛡️ Error Handling
+- Unknown routes fall back to the themed `404.html` page.
+- Unhandled errors render `500.html` with user guidance.
 
-### Authentication
-- `GET /signin` - Initiate Azure AD authentication
-- `GET /signout` - Sign out and clear session
-- `GET /create-account` - Account creation flow
-- `GET /api/auth/status` - Current authentication status
-
-### User Management
-- `GET /api/user/profile` - User profile information
-- `GET /profile.html` - User profile page
-
-### System Information
-- `GET /api/system/info` - Comprehensive system information
-- `GET /api/database/health` - Database connection status
-
-## 🚀 Deployment
-
-### Azure App Service Configuration
-
-1. **Runtime Configuration:**
-   - Node.js 22 LTS
-   - Always On enabled
-   - HTTPS only
-
-2. **Environment Variables:**
-   ```bash
-   NODE_ENV=production
-   WEBSITE_NODE_DEFAULT_VERSION=~22
-   ```
-
-3. **Authentication Setup:**
-   - Configure Azure AD in App Service Authentication
-   - Set up redirect URIs and app permissions
-
-### Database Setup (Optional)
-
-1. **Azure SQL Database:**
-   - Create Azure SQL Database instance
-   - Configure firewall rules for App Service
-   - Set up Managed Identity authentication
-
-2. **Connection Configuration:**
-   ```bash
-   DATABASE_AUTH_TYPE=managed-identity
-   DATABASE_SERVER=your-server.database.windows.net
-   DATABASE_NAME=your-database-name
-   ```
-
-## 🔒 Security Features
-
-- **Content Security Policy** - Helmet.js security headers
-- **CORS Configuration** - Cross-origin resource sharing controls
-- **Session Security** - Secure session configuration
-- **Input Validation** - Request validation and sanitization
-- **Azure AD Integration** - Enterprise authentication
-
-## 📊 Monitoring & Health Checks
-
-### Built-in Health Checks
-- Application server status
-- Database connectivity
-- System resource monitoring
-- Authentication service status
-
-### Performance Monitoring
-- Page load time tracking
-- API response time monitoring
-- Memory usage tracking
-- Error rate monitoring
-
-## 🔄 Development Workflow
-
-### Local Development
-```bash
-npm run dev          # Start with nodemon for hot reload
-npm start           # Start production server
-npm test            # Run test suite (when implemented)
-```
-
-### Code Quality
-- ESLint configuration for code standards
-- Error handling best practices
-- Logging standards implementation
-- Security vulnerability scanning
-
-## 📚 Additional Resources
-
-- [Azure App Service Documentation](https://docs.microsoft.com/en-us/azure/app-service/)
-- [Azure Active Directory Integration](https://docs.microsoft.com/en-us/azure/active-directory/)
-- [Express.js Documentation](https://expressjs.com/)
-- [Node.js 22 LTS Features](https://nodejs.org/)
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Implement changes with tests
-4. Submit a pull request
+## ☁️ Deploying to Azure App Service
+1. Create an App Service (Linux or Windows) targeting Node.js 22 LTS.
+2. Set `WEBSITE_NODE_DEFAULT_VERSION=~22` and any required Azure AD settings.
+3. Deploy the repository (Git, VS Code, or GitHub Actions).
+4. Configure Azure App Service Authentication if you need managed sign-in.
 
 ## 📄 License
-
-This project is part of the EFS Module 2 development initiative.
+This project is part of the EFSMOD2 initiative for the Florida Department of Education.
 
 ---
 
-## Recent Updates
-
-### Architecture Transformation
-- **Express.js Integration** - Converted from basic HTTP server to enterprise-grade Express.js application
-- **Azure AD Authentication** - Implemented complete authentication flow with user profile management
-- **Database Architecture** - Added SQL Server integration with Azure Managed Identity support
-- **UI Enhancement** - Integrated Early Learning Family Portal design with responsive layout
-- **API Expansion** - Added comprehensive REST API endpoints for system monitoring and user management
-
-### Security Enhancements
-- **Helmet.js Integration** - Advanced security header management
-- **CORS Configuration** - Fine-tuned cross-origin resource sharing
-- **Session Management** - Secure session handling with proper configuration
-- **Environment Configuration** - Comprehensive environment variable management
-
-### Performance Optimizations
-- **Connection Pooling** - Optimized database connections
-- **Static File Serving** - Efficient asset delivery
-- **Error Handling** - Centralized error management with proper logging
-- **Health Monitoring** - Multi-layer health check system
-
-Built with ❤️ for the Florida Department of Education - Early Learning Family Portal Initiative
+Built for a seamless **web** experience with just enough auth-aware APIs for Azure integrations.

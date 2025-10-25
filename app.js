@@ -1,389 +1,257 @@
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const fetch = globalThis.fetch || ((...args) => import('node-fetch').then(({ default: fetchFn }) => fetchFn(...args)));
-const { ensureIntakeTable, upsertIntakeForm } = require('./config/database');
-require('dotenv').config();
+const path = require("path");
+const express = require("express");
+const helmet = require("helmet");
+const cors = require("cors");
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Security middleware
-app.use(helmet());
+const MICROSOFT_CLIENT_ID =
+  process.env.AZURE_AD_CLIENT_ID || "84b2dfe9-f72d-4f93-a55d-08e5735bf2a5";
+const MICROSOFT_TENANT_ID = process.env.AZURE_AD_TENANT_ID?.trim() || "common";
+const MICROSOFT_SCOPES =
+  process.env.AZURE_AD_SCOPES?.trim() || "openid profile email offline_access";
+const MICROSOFT_REDIRECT_PATH =
+  process.env.AZURE_AD_REDIRECT_PATH?.trim() || "/auth/callback";
 
-// CORS middleware
-app.use(cors());
+const buildAuthorizeEndpoint = (tenantId = "common") =>
+  `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize`;
 
-// Parse JSON bodies
-app.use(express.json());
+const buildRedirectUri = (req, pathSegment) => {
+  const protocol = req.get("x-forwarded-proto") || req.protocol;
+  return `${protocol}://${req.get("host")}${pathSegment}`;
+};
 
-// Parse URL-encoded bodies
-app.use(express.urlencoded({ extended: true }));
+const buildMicrosoftLoginUrl = (req, options = {}) => {
+  const overrideTenant = options.tenant || req.query.tenant;
+  const tenantNormalized = (overrideTenant || MICROSOFT_TENANT_ID || "common")
+    .toString()
+    .trim();
+  const authorizeUrl = buildAuthorizeEndpoint(
+    tenantNormalized.length > 0 ? tenantNormalized : "common"
+  );
 
-// Serve static files from public directory
-app.use(express.static('public'));
-
-// Ensure database schema (best effort)
-if (process.env.SQL_SERVER || process.env.SQL_CONNECTION_STRING) {
-  ensureIntakeTable().catch((err) => {
-    console.error('Failed to ensure intake table:', err.message);
+  const params = new URLSearchParams({
+    client_id: options.clientId || MICROSOFT_CLIENT_ID,
+    response_type: options.responseType || "code",
+    response_mode: options.responseMode || "query",
+    scope: options.scope || MICROSOFT_SCOPES,
+    redirect_uri:
+      options.redirectUri ||
+      buildRedirectUri(req, options.redirectPath || MICROSOFT_REDIRECT_PATH),
   });
-}
 
-// Routes
-app.get('/', (req, res) => {
-  // Serve the FL WINS homepage
-  res.sendFile(__dirname + '/public/flwins.html');
-});
-
-// API status endpoint
-app.get('/api/status', (req, res) => {
-  res.json({
-    message: 'Welcome to FLWINS2 Development Server',
-    status: 'running',
-    environment: process.env.NODE_ENV || 'development',
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.get('/health', (req, res) => {
-  res.status(200).json({
-    status: 'healthy',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString()
-  });
-});
-
-// Authentication routes
-app.get('/signin', (req, res) => {
-  // Redirect to Azure AD login
-  res.redirect('/.auth/login/aad');
-});
-
-app.get('/create-account', (req, res) => {
-  // Redirect to Azure AD login (same as sign in for Azure AD)
-  res.redirect('/.auth/login/aad');
-});
-
-app.get('/signout', (req, res) => {
-  // Redirect to Azure AD logout
-  res.redirect('/.auth/logout');
-});
-
-// Serve FL WINS HTML page
-app.get('/flwins.html', (req, res) => {
-  res.sendFile(__dirname + '/public/flwins.html');
-});
-
-// Handle the incorrect redirect URL - redirect to flwins.html
-app.get('/flwins2.html', (req, res) => {
-  res.redirect('/flwins.html');
-});
-
-// Profile page route
-app.get('/profile', (req, res) => {
-  res.sendFile(__dirname + '/public/profile.html');
-});
-
-// Helper to extract claim values
-const getClaimValue = (claims = [], claimTypes = []) => {
-  for (const type of claimTypes) {
-    const claim = claims.find(c => c.typ === type);
-    if (claim && claim.val) {
-      return claim.val;
-    }
+  if (options.prompt || req.query.prompt) {
+    params.set("prompt", options.prompt || `${req.query.prompt}`.trim());
   }
-  return null;
+
+  if (options.state || req.query.state) {
+    params.set("state", options.state || `${req.query.state}`);
+  }
+
+  if (options.loginHint || req.query.login_hint) {
+    params.set("login_hint", options.loginHint || `${req.query.login_hint}`);
+  }
+
+  return `${authorizeUrl}?${params.toString()}`;
 };
 
 const getAppBaseUrl = (req) => {
-  const protocol = req.get('x-forwarded-proto') || req.protocol;
-  const host = req.get('host');
-  return `${protocol}://${host}`;
+  const protocol = req.get("x-forwarded-proto") || req.protocol;
+  return `${protocol}://${req.get("host")}`;
 };
 
-class ProfileError extends Error {
+class AuthenticationError extends Error {
   constructor(message, status = 500) {
     super(message);
     this.status = status;
   }
 }
 
-const fetchProfileData = async (req, { includeGraph = true } = {}) => {
-  const authResponse = await fetch(`${getAppBaseUrl(req)}/.auth/me`, {
-    headers: {
-      cookie: req.headers.cookie || '',
-      'x-zumo-auth': req.headers['x-zumo-auth'] || ''
+const getClaimValue = (claims = [], claimTypes = []) => {
+  for (const type of claimTypes) {
+    const claimMatch = claims.find((claim) => claim.typ === type);
+    if (claimMatch?.val) {
+      return claimMatch.val;
     }
-  });
+  }
+  return null;
+};
 
-  if (!authResponse.ok) {
-    throw new ProfileError('Authentication context not available', authResponse.status === 401 ? 401 : 500);
+const fetchAuthenticationPrincipal = async (req) => {
+  const headers = {
+    cookie: req.headers.cookie || "",
+    "x-zumo-auth": req.headers["x-zumo-auth"] || "",
+  };
+
+  const authEndpoint = `${getAppBaseUrl(req)}/.auth/me`;
+  const response = await fetch(authEndpoint, { headers });
+
+  if (response.status === 401) {
+    return null;
   }
 
-  const authData = await authResponse.json();
-  const principal = authData?.[0];
+  if (!response.ok) {
+    throw new AuthenticationError(
+      `Azure authentication endpoint responded with status ${response.status}`,
+      response.status
+    );
+  }
 
-  if (!principal || !principal.user_id) {
-    throw new ProfileError('User not authenticated', 401);
+  const payload = await response.json();
+  return payload?.[0] || null;
+};
+
+const mapPrincipalToProfile = (principal) => {
+  if (!principal) {
+    return null;
   }
 
   const claims = principal.user_claims || [];
 
-  const baseProfile = {
+  return {
     id: principal.user_id,
-    displayName: getClaimValue(claims, [
-      'name',
-      'http://schemas.microsoft.com/identity/claims/displayname',
-      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'
+    name: getClaimValue(claims, [
+      "name",
+      "http://schemas.microsoft.com/identity/claims/displayname",
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name",
     ]),
-    firstName: getClaimValue(claims, [
-      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname',
-      'given_name'
+    givenName: getClaimValue(claims, [
+      "given_name",
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname",
     ]),
-    lastName: getClaimValue(claims, [
-      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname',
-      'family_name'
+    surname: getClaimValue(claims, [
+      "family_name",
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/surname",
     ]),
     email: getClaimValue(claims, [
-      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress',
-      'email',
-      'upn'
+      "preferred_username",
+      "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress",
+      "upn",
     ]),
-    department: getClaimValue(claims, [
-      'department',
-      'http://schemas.microsoft.com/ws/2008/06/identity/claims/department'
-    ]),
-    jobTitle: getClaimValue(claims, [
-      'jobTitle',
-      'http://schemas.microsoft.com/identity/claims/jobtitle'
-    ]),
-    phone: getClaimValue(claims, [
-      'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/otherphone',
-      'phone_number'
-    ])
+    identityProvider: principal.identity_provider,
+    userPrincipalName: getClaimValue(claims, ["upn"]),
+    tenantId: principal.tenant_id,
   };
-
-  let graphProfile = null;
-  const accessToken = principal.access_token;
-
-  if (includeGraph && accessToken) {
-    try {
-      const graphResponse = await fetch('https://graph.microsoft.com/v1.0/me?$select=displayName,givenName,surname,mail,userPrincipalName,jobTitle,department,mobilePhone,businessPhones,officeLocation,streetAddress,city,state,postalCode', {
-        headers: {
-          Authorization: `Bearer ${accessToken}`
-        }
-      });
-
-      if (graphResponse.ok) {
-        graphProfile = await graphResponse.json();
-
-        baseProfile.displayName = graphProfile.displayName || baseProfile.displayName;
-        baseProfile.firstName = graphProfile.givenName || baseProfile.firstName;
-        baseProfile.lastName = graphProfile.surname || baseProfile.lastName;
-        baseProfile.email = graphProfile.mail || graphProfile.userPrincipalName || baseProfile.email;
-        baseProfile.department = graphProfile.department || baseProfile.department;
-        baseProfile.jobTitle = graphProfile.jobTitle || baseProfile.jobTitle;
-        baseProfile.phone = graphProfile.mobilePhone || baseProfile.phone;
-        baseProfile.workPhone = Array.isArray(graphProfile.businessPhones) ? graphProfile.businessPhones[0] : undefined;
-        baseProfile.officeLocation = graphProfile.officeLocation || baseProfile.officeLocation;
-        baseProfile.address = graphProfile.streetAddress;
-        baseProfile.city = graphProfile.city;
-        baseProfile.state = graphProfile.state;
-        baseProfile.zipCode = graphProfile.postalCode;
-      } else {
-        console.warn('Microsoft Graph responded with status:', graphResponse.status);
-      }
-    } catch (graphError) {
-      console.warn('Microsoft Graph request failed:', graphError.message);
-    }
-  } else if (!accessToken) {
-    console.warn('No access token available for Microsoft Graph');
-  }
-
-  return { principal, claims, baseProfile, graphProfile, accessToken };
 };
 
-// API endpoint to get user profile
-app.get('/api/profile', async (req, res) => {
-  try {
-    const { principal, baseProfile, claims, graphProfile } = await fetchProfileData(req);
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "public")));
 
-    res.json({
-      profile: baseProfile,
-      authProvider: principal.identity_provider,
-      claims,
-      graph: graphProfile
-    });
-  } catch (error) {
-    const status = error instanceof ProfileError ? error.status : 500;
-    if (!(error instanceof ProfileError)) {
-      console.error('Profile API error:', error);
-    }
-    res.status(status).json({ error: error.message || 'Failed to get user profile' });
-  }
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "efsmod.html"));
 });
 
-// API endpoint to check authentication status
-app.get('/api/auth/status', (req, res) => {
+app.get("/signin", (req, res) => {
+  res.redirect(buildMicrosoftLoginUrl(req));
+});
+
+app.get("/create-account", (req, res) => {
+  res.redirect(buildMicrosoftLoginUrl(req));
+});
+
+app.get("/signout", (req, res) => {
+  res.redirect("/.auth/logout");
+});
+
+app.get("/status", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "status.html"));
+});
+
+app.get("/health", (req, res) => {
+  res.type("text/plain").send("healthy");
+});
+
+app.get("/auth/callback", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "auth-callback.html"));
+});
+
+app.get("/api/auth/status", async (req, res) => {
   try {
-    console.log('Auth status check - Headers received:');
-    console.log('x-ms-client-principal:', req.headers['x-ms-client-principal'] ? 'Present' : 'Not present');
-    console.log('x-ms-client-principal-idp:', req.headers['x-ms-client-principal-idp']);
-    console.log('x-ms-client-principal-name:', req.headers['x-ms-client-principal-name']);
-    
-    const clientPrincipal = req.headers['x-ms-client-principal'];
-    const clientPrincipalIdp = req.headers['x-ms-client-principal-idp'];
-    const clientPrincipalName = req.headers['x-ms-client-principal-name'];
-    
-    if (clientPrincipal) {
-      const decoded = Buffer.from(clientPrincipal, 'base64').toString('ascii');
-      const userInfo = JSON.parse(decoded);
-      
-      console.log('Decoded user info:', userInfo);
-      
-      const response = {
-        authenticated: true,
-        user: {
-          id: userInfo.userId || userInfo.sid,
-          name: userInfo.userDetails || clientPrincipalName,
-          email: userInfo.claims?.find(c => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')?.val,
-          provider: clientPrincipalIdp || 'aad'
-        }
-      };
-      
-      console.log('Sending authenticated response:', response);
-      res.json(response);
-    } else {
-      console.log('No authentication headers found, sending unauthenticated response');
-      res.json({
+    const principal = await fetchAuthenticationPrincipal(req);
+
+    if (!principal) {
+      return res.json({
         authenticated: false,
-        user: null
+        user: null,
       });
     }
+
+    const profile = mapPrincipalToProfile(principal);
+    res.json({
+      authenticated: true,
+      user: profile,
+    });
   } catch (error) {
-    console.error('Auth status error:', error);
-    res.status(500).json({ 
-      error: 'Failed to check authentication status',
-      authenticated: false 
+    const status = error instanceof AuthenticationError ? error.status : 500;
+    if (!(error instanceof AuthenticationError)) {
+      console.error("Auth status error:", error);
+    }
+
+    res.status(status).json({
+      authenticated: false,
+      error: error.message || "Unable to determine authentication status",
     });
   }
 });
 
-// Alternative auth endpoint using Azure's built-in endpoint
-app.get('/api/auth/me', async (req, res) => {
+app.get("/api/profile", async (req, res) => {
   try {
-    console.log('Auth me endpoint called');
-    
-    // Try the built-in Azure endpoint first
-    const authResponse = await fetch(`${getAppBaseUrl(req)}/.auth/me`, {
-      headers: {
-        'cookie': req.headers.cookie || '',
-        'x-zumo-auth': req.headers['x-zumo-auth'] || ''
-      }
-    });
-    
-    if (authResponse.ok) {
-      const authData = await authResponse.json();
-      console.log('Azure auth response:', authData);
-      
-      if (authData && authData.length > 0 && authData[0].user_id) {
-        const userInfo = authData[0];
-        res.json({
-          authenticated: true,
-          user: {
-            id: userInfo.user_id,
-            name: userInfo.user_claims?.find(c => c.typ === 'name')?.val || userInfo.user_id,
-            email: userInfo.user_claims?.find(c => c.typ === 'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress')?.val,
-            provider: userInfo.identity_provider || 'aad'
-          }
-        });
-      } else {
-        res.json({ authenticated: false, user: null });
-      }
-    } else {
-      console.log('Azure auth endpoint returned:', authResponse.status);
-      res.json({ authenticated: false, user: null });
-    }
-  } catch (error) {
-    console.error('Auth me error:', error);
-    res.json({ authenticated: false, user: null });
-  }
-});
+    const principal = await fetchAuthenticationPrincipal(req);
 
-// API endpoint to update user profile
-app.post('/api/intake', express.json(), async (req, res) => {
-  try {
-    const { principal, baseProfile } = await fetchProfileData(req, { includeGraph: false });
-
-    if (!process.env.SQL_SERVER && !process.env.SQL_CONNECTION_STRING) {
-      return res.status(500).json({ error: 'SQL Database configuration missing on server.' });
+    if (!principal) {
+      return res.status(401).json({
+        error: "User not authenticated",
+        authenticated: false,
+      });
     }
 
-    const body = req.body || {};
-    const sanitize = (value, maxLength = 4000) => {
-      if (typeof value !== 'string') return null;
-      const trimmed = value.trim();
-      if (!trimmed) return null;
-      return trimmed.length > maxLength ? trimmed.slice(0, maxLength) : trimmed;
-    };
-
-    const firstName = sanitize(body.firstName, 150) || baseProfile.firstName;
-    const lastName = sanitize(body.lastName, 150) || baseProfile.lastName;
-    const email = baseProfile.email || sanitize(body.email, 256);
-
-    if (!email) {
-      return res.status(400).json({ error: 'Email is required.' });
-    }
-
-    await upsertIntakeForm({
-      userId: principal.user_id,
-      email,
-      firstName,
-      lastName,
-      department: sanitize(body.department, 150),
-      jobTitle: sanitize(body.jobTitle, 150),
-      officeLocation: sanitize(body.officeLocation, 150),
-      workPhone: sanitize(body.workPhone, 50),
-      address: sanitize(body.address, 500),
-      city: sanitize(body.city, 150),
-      state: sanitize(body.state, 50),
-      zipCode: sanitize(body.zipCode, 20),
-      phone: sanitize(body.phone, 50)
-    });
+    const profile = mapPrincipalToProfile(principal);
 
     res.json({
-      message: 'Intake form saved successfully.'
+      authenticated: true,
+      profile,
+      claims: principal.user_claims || [],
+      identityProvider: principal.identity_provider,
     });
   } catch (error) {
-    const status = error instanceof ProfileError ? error.status : 500;
-    if (!(error instanceof ProfileError)) {
-      console.error('Intake form submission error:', error);
+    const status = error instanceof AuthenticationError ? error.status : 500;
+    if (!(error instanceof AuthenticationError)) {
+      console.error("Profile endpoint error:", error);
     }
+
     res.status(status).json({
-      error: error.message || 'Failed to submit intake form.'
+      authenticated: false,
+      error: error.message || "Unable to retrieve profile information",
     });
   }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-  });
+app.use((req, res, next) => {
+  if (req.method !== "GET") {
+    return next();
+  }
+
+  res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({
-    error: 'Route not found',
-    path: req.originalUrl
-  });
+app.use((err, req, res, next) => {
+  console.error("Application error:", err);
+
+  if (res.headersSent) {
+    return next(err);
+  }
+
+  res.status(500).sendFile(path.join(__dirname, "public", "500.html"));
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Web application listening on port ${port}`);
 });
