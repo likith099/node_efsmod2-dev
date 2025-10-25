@@ -98,9 +98,8 @@ class PortalNavigation {
       window.location.href = "/signout";
     });
 
-    const profileLink = this.accountContainer.querySelector(
-      'a[href="/profile"]'
-    );
+    const profileLink =
+      this.accountContainer.querySelector('a[href="/profile"]');
     profileLink?.addEventListener("click", () => this.toggleMenu(false));
   }
 
@@ -171,10 +170,7 @@ class PortalNavigation {
 
   detachMenuListeners() {
     if (this.triggerButton) {
-      this.triggerButton.removeEventListener(
-        "click",
-        this.boundTriggerHandler
-      );
+      this.triggerButton.removeEventListener("click", this.boundTriggerHandler);
     }
 
     const menu = this.accountContainer.querySelector(".portal-user-menu");

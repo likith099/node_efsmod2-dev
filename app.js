@@ -89,9 +89,7 @@ app.get("/signout", (req, res) => {
   });
 
   const returnTo = `${getAppBaseUrl(req)}/`;
-  res.redirect(
-    `/.auth/logout?post_logout_redirect_uri=${encodeURIComponent(returnTo)}`
-  );
+  res.redirect(`/.auth/logout?post_logout_redirect_uri=${returnTo}`);
 });
 
 // Serve EFSMOD HTML page
