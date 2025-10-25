@@ -3,6 +3,10 @@ const fs = require("fs");
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
+const fetch =
+  globalThis.fetch ||
+  ((...args) =>
+    import("node-fetch").then(({ default: fetchFn }) => fetchFn(...args)));
 require("dotenv").config();
 
 const app = express();
