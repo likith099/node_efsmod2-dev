@@ -3,20 +3,22 @@
   "version": "1.0.0",
   "description": "Basic Node.js web application for Azure App Service",
   "main": "app.js",
-  "engines": {
-    "node": "22.x"
-  },
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
     "test": "echo \"No tests specified yet\""
   },
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "cors": "^2.8.5",
     "helmet": "^7.1.0",
-    "node-fetch": "^3.3.2"
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2",
+    "@azure/identity": "^4.4.0",
+    "mssql": "^10.0.3"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"
@@ -25,9 +27,8 @@
     "nodejs",
     "express",
     "azure",
-    "web-app",
-    "efs"
+    "web-app"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "MIT"
 }

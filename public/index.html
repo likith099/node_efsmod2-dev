@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FL WINS Development Server</title>
+    <link rel="stylesheet" href="/css/flwins-styles.css">
+    <link rel="stylesheet" href="/css/flwins-components.css">
+    <style>
+        .dev-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--flwins-space-8);
+        }
+        .dev-card {
+            background: var(--flwins-white);
+            padding: var(--flwins-space-8);
+            border-radius: var(--flwins-radius-xl);
+            box-shadow: var(--flwins-shadow-lg);
+            margin-bottom: var(--flwins-space-6);
+        }
+        .dev-status {
+            background: #e8f5e8;
+            border: 2px solid #4CAF50;
+            padding: var(--flwins-space-6);
+            border-radius: var(--flwins-radius-md);
+            margin: var(--flwins-space-6) 0;
+        }
+        .dev-info {
+            background: var(--flwins-primary-lighter);
+            border: 2px solid var(--flwins-primary);
+            padding: var(--flwins-space-6);
+            border-radius: var(--flwins-radius-md);
+            margin: var(--flwins-space-6) 0;
+        }
+        .dev-actions {
+            display: flex;
+            gap: var(--flwins-space-4);
+            flex-wrap: wrap;
+            margin: var(--flwins-space-8) 0;
+        }
+        .dev-preview-link {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--flwins-primary) 0%, var(--flwins-primary-light) 100%);
+            color: var(--flwins-white);
+            padding: var(--flwins-space-6) var(--flwins-space-8);
+            border-radius: var(--flwins-radius-lg);
+            text-decoration: none;
+            font-weight: var(--flwins-font-weight-bold);
+            font-size: var(--flwins-font-size-lg);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-align: center;
+            min-width: 200px;
+        }
+        .dev-preview-link:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--flwins-shadow-xl);
+            text-decoration: none;
+            color: var(--flwins-white);
+        }
+    </style>
+</head>
+<body>
+    <div class="dev-container">
+        <div class="dev-card">
+            <h1 class="flwins-text-center flwins-text-primary flwins-mb-6">
+                🚀 FL WINS Development Server
+            </h1>
+            
+            <div class="dev-status">
+                <h3 class="flwins-font-semibold flwins-mb-4">✅ Server Status</h3>
+                <p class="flwins-mb-4">Your Node.js application is running successfully!</p>
+                <p><strong>Framework:</strong> Express.js</p>
+                <p><strong>Runtime:</strong> Node.js 22 LTS</p>
+                <p><strong>Target Platform:</strong> Azure App Service</p>
+            </div>
+
+            <div class="dev-actions">
+                <a href="/flwins.html" class="dev-preview-link">
+                    🏠 View FL WINS Home Page
+                </a>
+            </div>
+
+            <div class="dev-info">
+            <h3>📡 API Endpoints</h3>
+            <ul>
+                <li><strong>GET /</strong> - Main API endpoint</li>
+                <li><strong>GET /health</strong> - Health check endpoint</li>
+            </ul>
+        </div>
+
+        <div class="api-info">
+            <h3>🛠️ Development Info</h3>
+            <ul>
+                <li><strong>Runtime:</strong> Node.js 22 LTS</li>
+                <li><strong>Framework:</strong> Express.js</li>
+                <li><strong>Deployment Target:</strong> Azure App Service</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
