@@ -1,12 +1,13 @@
 class PortalNavigation {
   constructor() {
     this.accountContainer = document.getElementById("portal-account-actions");
-    this.statusButton = document.querySelector(
-      ".portal-nav-actions .portal-btn-secondary"
-    );
     this.dropdown = null;
     this.triggerButton = null;
     this.isAuthenticated = false;
+    this.boundDocumentPointerHandler = this.handleDocumentPointer.bind(this);
+    this.boundDocumentKeyHandler = this.handleDocumentKey.bind(this);
+    this.boundTriggerHandler = this.handleTriggerClick.bind(this);
+    this.boundMenuFocusHandler = this.handleMenuFocusOut.bind(this);
   }
 
   async init() {
@@ -40,6 +41,7 @@ class PortalNavigation {
   }
 
   renderSignedOut() {
+    this.detachMenuListeners();
     this.accountContainer.dataset.state = "signed-out";
     this.accountContainer.innerHTML = `
       <a href="/signin" class="portal-btn portal-btn-primary" data-role="signin-link">
@@ -56,6 +58,7 @@ class PortalNavigation {
   renderSignedIn(user) {
     const displayName = user?.name || user?.email || "Profile";
 
+    this.detachMenuListeners();
     this.accountContainer.dataset.state = "signed-in";
     this.accountContainer.innerHTML = `
       <div class="portal-user-menu" data-open="false">
@@ -84,18 +87,21 @@ class PortalNavigation {
       ".portal-user-trigger"
     );
 
-    this.triggerButton?.addEventListener("click", () => this.toggleMenu());
-    document.addEventListener("click", (event) =>
-      this.handleGlobalClick(event)
-    );
+    this.attachMenuListeners();
 
     const logoutButton = this.accountContainer.querySelector(
       '[data-action="logout"]'
     );
     logoutButton?.addEventListener("click", () => {
+      this.toggleMenu(false);
       this.renderSignedOut();
       window.location.href = "/signout";
     });
+
+    const profileLink = this.accountContainer.querySelector(
+      'a[href="/profile"]'
+    );
+    profileLink?.addEventListener("click", () => this.toggleMenu(false));
   }
 
   toggleMenu(forceState) {
@@ -112,21 +118,76 @@ class PortalNavigation {
     this.dropdown.hidden = !nextState;
   }
 
-  handleGlobalClick(event) {
+  handleTriggerClick() {
+    this.toggleMenu();
+  }
+
+  handleDocumentPointer(event) {
     if (!this.dropdown || !this.triggerButton) {
       return;
     }
 
     const menu = this.dropdown.closest(".portal-user-menu");
-    if (!menu) {
-      return;
-    }
-
-    if (menu.contains(event.target)) {
+    if (!menu || menu.contains(event.target)) {
       return;
     }
 
     this.toggleMenu(false);
+  }
+
+  handleDocumentKey(event) {
+    if (event.key === "Escape") {
+      this.toggleMenu(false);
+      this.triggerButton?.focus();
+    }
+  }
+
+  handleMenuFocusOut(event) {
+    if (!this.dropdown) {
+      return;
+    }
+
+    const menu = this.dropdown.closest(".portal-user-menu");
+    const nextFocus = event.relatedTarget;
+
+    if (!menu || (nextFocus && menu.contains(nextFocus))) {
+      return;
+    }
+
+    this.toggleMenu(false);
+  }
+
+  attachMenuListeners() {
+    if (!this.triggerButton || !this.dropdown) {
+      return;
+    }
+
+    this.triggerButton.addEventListener("click", this.boundTriggerHandler);
+    const menu = this.dropdown.closest(".portal-user-menu");
+    menu?.addEventListener("focusout", this.boundMenuFocusHandler);
+    document.addEventListener("pointerdown", this.boundDocumentPointerHandler);
+    document.addEventListener("keydown", this.boundDocumentKeyHandler);
+  }
+
+  detachMenuListeners() {
+    if (this.triggerButton) {
+      this.triggerButton.removeEventListener(
+        "click",
+        this.boundTriggerHandler
+      );
+    }
+
+    const menu = this.accountContainer.querySelector(".portal-user-menu");
+    menu?.removeEventListener("focusout", this.boundMenuFocusHandler);
+
+    document.removeEventListener(
+      "pointerdown",
+      this.boundDocumentPointerHandler
+    );
+    document.removeEventListener("keydown", this.boundDocumentKeyHandler);
+
+    this.dropdown = null;
+    this.triggerButton = null;
   }
 
   escapeHtml(value) {
