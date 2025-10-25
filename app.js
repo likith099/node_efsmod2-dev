@@ -1,4 +1,5 @@
 const path = require("path");
+const fs = require("fs");
 const express = require("express");
 const helmet = require("helmet");
 const cors = require("cors");
@@ -136,6 +137,23 @@ const mapPrincipalToProfile = (principal) => {
   };
 };
 
+const sendPublicFileOrFallback = (res, statusCode, fileName, fallbackMessage) => {
+  const resolvedPath = path.join(__dirname, "public", fileName);
+
+  if (fs.existsSync(resolvedPath)) {
+    return res.status(statusCode).sendFile(resolvedPath);
+  }
+
+  console.warn(
+    `Static page ${fileName} is missing at ${resolvedPath}. Falling back to plain text response.`
+  );
+
+  return res
+    .status(statusCode)
+    .type("text/plain")
+    .send(fallbackMessage || "An unexpected error occurred.");
+};
+
 app.use(
   helmet({
     contentSecurityPolicy: false,
@@ -239,7 +257,12 @@ app.use((req, res, next) => {
     return next();
   }
 
-  res.status(404).sendFile(path.join(__dirname, "public", "404.html"));
+  sendPublicFileOrFallback(
+    res,
+    404,
+    "404.html",
+    "The requested resource could not be found."
+  );
 });
 
 app.use((err, req, res, next) => {
@@ -249,7 +272,12 @@ app.use((err, req, res, next) => {
     return next(err);
   }
 
-  res.status(500).sendFile(path.join(__dirname, "public", "500.html"));
+  sendPublicFileOrFallback(
+    res,
+    500,
+    "500.html",
+    "An unexpected error occurred while processing your request."
+  );
 });
 
 app.listen(port, () => {
