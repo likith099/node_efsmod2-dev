@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     permissions:
       contents: read #This is required for actions/checkout
 
@@ -28,7 +28,7 @@ jobs:
           npm install
           npm run build --if-present
           npm run test --if-present
-
+      
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
@@ -51,13 +51,13 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_32CBBBE754004CA091341D694D29F735 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_2FD337629BC8459B96CC4991C1D3264C }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_291E2C3BDA8141BE8B1BAA325C450859 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_A6FC803F7B6248A68D8D670275D8E93B }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_809B22A354D04EA6B54C30DB234F5E20 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_BC5E57A91E9B4FFE97399223CAB9D13A }}
 
       - name: 'Deploy to Azure Web App'
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
+        id: deploy-to-webapp
         with:
           app-name: 'efsmod2-dev'
           slot-name: 'Production'
