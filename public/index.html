@@ -1,122 +1,131 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta http-equiv="X-UA-Compatible" content="IE=10" />
-    <title>Early Learning Family Portal: Home</title>
-    <link href="/css/landing.css" rel="stylesheet" />
-    <link rel="icon" type="image/png" href="../Early Learning Family Portal_ Home_files/logoNew.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=10" />
+  <title>Early Learning Family Portal: Home</title>
+  <link rel="icon" type="image/png" href="../Early Learning Family Portal_ Home_files/logoNew.png" />
+  <link href="/css/landing.css" rel="stylesheet" />
 </head>
 <body id="DocumentBody">
-    <nav>
-        <img class="hidden-xs" src="../Early Learning Family Portal_ Home_files/logoNew.png" alt="Florida Early Learning Logo" />
-        <label class="hidden-xs">DEV Family Portal</label>
-        <div style="display: flex; gap: 10px;">
-            <a href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" aria-label="Sign in" role="button">
-                <button type="button" class="btn navbar-btn">
-                    <span class="hidden-xs">
-                        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10.2852 3.33464C8.44421 3.33464 6.95182 4.82702 6.95182 6.66797C6.95182 8.50892 8.44421 10.0013 10.2852 10.0013C12.1261 10.0013 13.6185 8.50892 13.6185 6.66797C13.6185 4.82702 12.1261 3.33464 10.2852 3.33464ZM5.28516 6.66797C5.28516 3.90655 7.52373 1.66797 10.2852 1.66797C13.0466 1.66797 15.2852 3.90655 15.2852 6.66797C15.2852 9.42939 13.0466 11.668 10.2852 11.668C7.52373 11.668 5.28516 9.42939 5.28516 6.66797ZM6.95182 15.0013C5.57111 15.0013 4.45182 16.1206 4.45182 17.5013C4.45182 17.9615 4.07873 18.3346 3.61849 18.3346C3.15825 18.3346 2.78516 17.9615 2.78516 17.5013C2.78516 15.2001 4.65064 13.3346 6.95182 13.3346H13.6185C15.9197 13.3346 17.7852 15.2001 17.7852 17.5013C17.7852 17.9615 17.4121 18.3346 16.9518 18.3346C16.4916 18.3346 16.1185 17.9615 16.1185 17.5013C16.1185 16.1206 14.9992 15.0013 13.6185 15.0013H6.95182Z" fill="white"></path></svg>
-                    </span>
-                    Sign In
-                </button>
+  <!-- Site Header -->
+  <header class="site-header">
+    <div class="container header-bar">
+      <div class="brand">
+        <img class="brand__logo hidden-xs" src="../Early Learning Family Portal_ Home_files/logoNew.png" alt="Florida Early Learning Logo" />
+        <span class="brand__env hidden-xs" aria-label="Environment Badge">DEV Family Portal</span>
+      </div>
+
+      <nav class="primary-nav" aria-label="Primary">
+        <ul class="nav-actions">
+          <li>
+            <a class="btn btn-outline" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" aria-label="Sign in">
+              <span class="icon-user" aria-hidden="true"></span>
+              <span>Sign In</span>
             </a>
-            <button type="button" id="signUpButton" class="btn navbar-btn" style="background: #01689B; color: #FFFFFF;" onclick="window.location.href='https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignUp'">
-                <span class="hidden-xs" style="margin-right: 2px;">
-                    <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M3 19C3.69137 16.6928 5.46998 16 9.5 16C13.53 16 15.3086 16.6928 16 19" stroke="#fff" stroke-width="1.75" stroke-linecap="round"></path>
-                        <path d="M13 9.5C13 11.433 11.433 13 9.5 13C7.567 13 6 11.433 6 9.5C6 7.567 7.567 6 9.5 6C11.433 6 13 7.567 13 9.5Z" stroke="#fff" stroke-width="1.75"></path>
-                        <path d="M15 6H21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
-                        <path d="M18 3L18 9" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
-                </span>
-                Sign Up
-            </button>
-        </div>
-    </nav>
+          </li>
+          <li>
+            <a class="btn btn-primary" id="signUpButton" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignUp" aria-label="Sign up">
+              <span class="icon-plus-user" aria-hidden="true"></span>
+              <span>Sign Up</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-    <main id="main">
-        <section class="hero-section">
-            <img src="../Early Learning Family Portal_ Home_files/OELsliderimage.jpg" alt="Florida Early Learning Family Portal Hero Image" />
-            <div class="signin hidden-xs">
-                <h2>Welcome to <span style="font-weight: 700;">Florida's Early Learning Family Portal</span></h2>
-                <h3>Already have a Family Portal account?</h3>
-                <a href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" aria-label="Sign in here" role="button">
-                    <span>Sign in here</span>
-                    <svg width="20" height="20" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="#01689B"></path></svg>
-                </a>
-            </div>
-        </section>
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+      <img class="hero__image" src="../Early Learning Family Portal_ Home_files/OELsliderimage.jpg" alt="Florida Early Learning Family Portal Hero Image" />
+      <div class="hero__overlay-card hidden-xs" role="complementary" aria-label="Quick sign-in">
+        <h2>Welcome to <strong>Florida's Early Learning Family Portal</strong></h2>
+        <p class="subtle">Already have a Family Portal account?</p>
+        <a class="btn btn-inverse" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" aria-label="Sign in here">
+          <span>Sign in here</span>
+          <span class="icon-arrow" aria-hidden="true"></span>
+        </a>
+      </div>
+    </section>
 
-        <div class="container toprem" style="margin-bottom: 20pt;">
-            <div class="row mobileStyle cards-row">
-                <span class="col-xs-12" style="color: #2D2D2D; font-size: 14px; font-weight: 400; margin-bottom: 20px;">
-                    You will find information here about Florida’s early learning programs. You can also apply for School Readiness (child care assistance) and Voluntary Prekindergarten Education services online by clicking on an <strong>Apply for</strong> button below.
-                </span>
-            </div>
-            <div class="row mobileStyle">
-                <div class="col-xs-12 col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-header red"></div>
-                        <div class="panel-title red">Resource &amp; Referral</div>
-                        <div class="panel-content">
-                            Florida’s Child Care Resource and Referral Network or CCR&amp;R helps families locate quality child care and early education programs. Trained specialists offer information about local child care options and develop customized lists of child care providers based on each family’s specific child care needs.<br>Financial assistance strategies and referrals to other community resources and programs are also available.
-                        </div>
-                        <div class="panel-footer">
-                            <a href="https://www.fldoe.org/schools/early-learning/parents/ccr-r.stml" target="_blank" class="btn btn-red">
-                                <span>Learn More About CCR&amp;R</span>
-                                <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-header blue"></div>
-                        <div class="panel-title blue">School Readiness</div>
-                        <div class="panel-content">
-                            Florida’s School Readiness Program or SR offers financial assistance to eligible low-income families for early education and care so they can become financially self-sufficient and their young children can be successful in school in the future. Services vary based on individual needs and range from extended day care to after-school and school-age care in some instances.
-                        </div>
-                        <div class="panel-footer">
-                            <a class="btn btn-blue" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn">
-                                <span>Apply for School Readiness</span>
-                                <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-sm-4">
-                    <div class="panel panel-default">
-                        <div class="panel-header green"></div>
-                        <div class="panel-title green">VPK</div>
-                        <div class="panel-content">
-                            Florida’s Voluntary Prekindergarten Education Program or VPK is a free educational program that prepares 4-year-olds for kindergarten and beyond. Children must live in Florida and be 4 on or before September 1 of the school year they enroll. Parents can choose from private child care centers or public schools and school-year or summer programs. Parents of 4-year-olds with special needs have an option outside the classroom setting ‒ VPK Specialized Instructional Services (VPK-SIS).
-                        </div>
-                        <div class="panel-footer">
-                            <a class="btn btn-green" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn">
-                                <span>Apply for Voluntary Prekindergarten</span>
-                                <svg width="25" height="24" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"></path></svg>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+    <!-- Intro -->
+    <section class="section">
+      <div class="container">
+        <p class="lede">
+          You will find information here about Florida’s early learning programs. You can also apply for School Readiness (child care assistance) and Voluntary Prekindergarten Education services online by clicking on an <strong>Apply for</strong> button below.
+        </p>
 
-    <footer class="footer">
-        <div class="container">
-            <div>
-                Please contact your <a href="https://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx" target="_blank">early learning coalition</a> for immediate assistance.
+        <!-- Cards -->
+        <div class="cards">
+          <!-- CCR&R -->
+          <article class="card">
+            <div class="card__accent card__accent--red" aria-hidden="true"></div>
+            <h3 class="card__title card__title--red">Resource &amp; Referral</h3>
+            <p class="card__body">
+              Florida’s Child Care Resource and Referral Network (CCR&amp;R) helps families locate quality child care and early education programs. Trained specialists offer information about local options and develop customized lists based on your family’s specific needs. Financial assistance strategies and referrals to other community resources and programs are also available.
+            </p>
+            <div class="card__footer">
+              <a class="btn btn-red" href="https://www.fldoe.org/schools/early-learning/parents/ccr-r.stml" target="_blank" rel="noopener">
+                <span>Learn More About CCR&amp;R</span>
+                <span class="icon-arrow" aria-hidden="true"></span>
+              </a>
             </div>
-            <div>
-                This site is best viewed with Microsoft Edge. Download the latest version of <a target="_blank" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
+          </article>
+
+          <!-- SR -->
+          <article class="card">
+            <div class="card__accent card__accent--blue" aria-hidden="true"></div>
+            <h3 class="card__title card__title--blue">School Readiness</h3>
+            <p class="card__body">
+              Florida’s School Readiness Program (SR) offers financial assistance to eligible low-income families for early education and care so they can become financially self-sufficient and their young children can be successful in school. Services vary by need and may include extended day care, after-school, or school-age care.
+            </p>
+            <div class="card__footer">
+              <a class="btn btn-blue" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn">
+                <span>Apply for School Readiness</span>
+                <span class="icon-arrow" aria-hidden="true"></span>
+              </a>
             </div>
-            <div>
-                If you are using an Apple device (iPad, iPhone, Mac computer, MacBook), please download and use <a target="_blank" href="https://itunes.apple.com/us/app/chrome-web-browser-by-google/id535886823?mt=8">Google Chrome</a> to complete your application.
+          </article>
+
+          <!-- VPK -->
+          <article class="card">
+            <div class="card__accent card__accent--green" aria-hidden="true"></div>
+            <h3 class="card__title card__title--green">VPK</h3>
+            <p class="card__body">
+              Florida’s Voluntary Prekindergarten Education Program (VPK) is a free educational program that prepares 4-year-olds for kindergarten and beyond. Children must live in Florida and be 4 on or before September 1 of the school year they enroll. Parents may choose from private child care centers or public schools, including school-year or summer programs. VPK-SIS is available for eligible children with special needs.
+            </p>
+            <div class="card__footer">
+              <a class="btn btn-green" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn">
+                <span>Apply for Voluntary Prekindergarten</span>
+                <span class="icon-arrow" aria-hidden="true"></span>
+              </a>
             </div>
+          </article>
         </div>
-    </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p>
+        Please contact your
+        <a href="https://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx" target="_blank" rel="noopener">early learning coalition</a>
+        for immediate assistance.
+      </p>
+      <p>
+        This site is best viewed with Microsoft Edge. Download the latest version of
+        <a target="_blank" rel="noopener" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
+      </p>
+      <p>
+        If you are using an Apple device (iPad, iPhone, Mac), please download and use
+        <a target="_blank" rel="noopener" href="https://itunes.apple.com/us/app/chrome-web-browser-by-google/id535886823?mt=8">Google Chrome</a>
+        to complete your application.
+      </p>
+    </div>
+  </footer>
 </body>
 </html>
