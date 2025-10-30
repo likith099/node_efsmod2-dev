@@ -1,0 +1,64 @@
+/* Minimal CSS to replace Bootstrap/jQueryUI usage on the landing page */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; color: #2D2D2D; }
+img { max-width: 100%; height: auto; display: inline-block; }
+a { color: #01689B; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Container/grid approximations */
+.container { width: 100%; max-width: 1140px; margin-left: auto; margin-right: auto; padding-left: 15px; padding-right: 15px; }
+.row { display: flex; flex-wrap: wrap; margin-left: -15px; margin-right: -15px; }
+.col-xs-12 { width: 100%; padding-left: 15px; padding-right: 15px; }
+
+/* Columns at >=768px */
+@media (min-width: 768px) {
+  .col-sm-4 { width: 33.3333%; padding-left: 15px; padding-right: 15px; }
+  .col-sm-offset-6 { margin-left: 50%; }
+}
+
+/* Visibility helpers */
+.hidden-xs { display: none; }
+@media (min-width: 768px) { .hidden-xs { display: block; } }
+.hidden-sm, .hidden-md, .hidden-lg, .hidden-xl, .hidden-xxl { display: none; }
+@media (max-width: 767px) { .hidden-sm, .hidden-md, .hidden-lg, .hidden-xl, .hidden-xxl { display: block; } }
+
+/* Navbar (inline styles kept on HTML, but base tweaks here) */
+nav { line-height: 1; }
+
+/* Buttons */
+.btn { display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 3px; padding: 6px 12px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: none; }
+.btn:focus { outline: 2px solid #88B8D6; outline-offset: 1px; }
+.btn-default { background: #01689B; border-color: #01689B; color: #FFFFFF; }
+.btn-default:hover { filter: brightness(0.95); }
+.btn-primary { background: #AE0C06; border-color: #AE0C06; color: #FFFFFF; }
+.btn-primary:hover { filter: brightness(0.95); }
+
+/* Panels */
+.panel { background: #FFFFFF; border: 1px solid #D2D2D2; border-radius: 4px; position: relative; }
+.panel-default { border-color: #D2D2D2; }
+.panel-bodys { padding: 15px; }
+.panel-height { min-height: auto; }
+.panel-foot { width: 100%; }
+.panel-bp { padding-bottom: 15px; }
+
+/* Responsive tweaks from inline styles */
+.mobileStyle { display: block; }
+.toprem { margin-top: -2rem; }
+.signin { height: auto; background: #01689B; padding: 20px; position: relative; z-index: 1; }
+
+@media (min-width: 768px) {
+  .mobileStyle { display: flex; justify-content: center; }
+  .panel-height { min-height: 230px; }
+  .panel-foot { position: absolute; bottom: 0; }
+  .panel-bp { padding-bottom: 0; }
+  .signin { bottom: -100px; height: auto; background: #01689B; padding: 32px; position: absolute; z-index: 1; }
+  .toprem { margin-top: 12rem; }
+}
+
+/* Footer */
+.container-fluid { width: 100%; padding-left: 15px; padding-right: 15px; }
+.text-center { text-align: center; }
+.small { font-size: 14px; }
+
+/* Accessibility tweaks */
+[role="button"] { cursor: pointer; }
