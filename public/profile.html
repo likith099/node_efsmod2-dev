@@ -4,14 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Early Learning Family Portal: User Profile</title>
-  <link rel="stylesheet" href="../public/css/profile.css">
+  <!-- Only use the consolidated profile stylesheet (local) -->
+  <link rel="stylesheet" href="/css/profile.css">
 </head>
 
 <body>
   <header class="site-header">
     <div class="header-bar">
       <div class="brand">
-        <img class="brand__logo" src="images/logoNew.png" alt="Florida Early Learning Logo" />
+  <img class="brand__logo" src="/images/logoNew.png" alt="Florida Early Learning Logo" />
         <span class="brand__env">DEV Family Portal- User Profile</span>
       </div>
       <nav>
@@ -26,8 +27,8 @@
   <!-- Profile welcome: populated when authenticated -->
   <div id="profile-welcome" class="profile-welcome">
     <div class="container">
-      <div style="font-size:16px;font-weight:700;color:var(--brand-blue);">Welcome back,</div>
-      <div id="profile-user" style="font-size:16px;font-weight:600;color:var(--ink);"></div>
+      <div class="welcome-text">Welcome back,</div>
+      <div id="profile-user" class="welcome-user"></div>
     </div>
   </div>
 
@@ -36,10 +37,10 @@
       <div class="container">
         <div class="summary-head">
           <div>
-            <h2 style="margin:0 0 6px;font-size:20px;color:var(--brand-blue)">Household at a Glance</h2>
+            <h2 class="summary-title">Household at a Glance</h2>
             <p class="muted">Quick summary of your household, active applications and important alerts.</p>
           </div>
-          <div style="display:flex;gap:8px;align-items:center">
+          <div class="summary-actions">
             <a class="btn btn-outline" href="profile.html">Refresh</a>
             <a class="btn btn-inverse" href="signin.html">Manage account</a>
           </div>
@@ -48,20 +49,20 @@
         <!-- Household summary row -->
         <div class="summary-row">
           <div class="summary-card">
-            <h3 style="margin:0 0 8px;font-size:16px;color:var(--brand-blue)">Household at a Glance</h3>
+            <h3 class="card-h3-blue">Household at a Glance</h3>
             <p class="muted">Members: <strong id="hh-members">—</strong></p>
             <p class="muted">Active applications: <strong id="hh-active">—</strong></p>
             <a class="btn btn-outline" href="profile.html">View details</a>
           </div>
 
           <div class="summary-card">
-            <h3 style="margin:0 0 8px;font-size:16px;color:var(--brand-green)">VPK Applications</h3>
+            <h3 class="card-h3-green">VPK Applications</h3>
             <p class="muted">Start or continue your VPK application.</p>
             <a class="btn btn-green" href="signin.html">Apply / View</a>
           </div>
 
           <div class="summary-card">
-            <h3 style="margin:0 0 8px;font-size:16px;color:var(--brand-red)">School Readiness Applications</h3>
+            <h3 class="card-h3-red">School Readiness Applications</h3>
             <p class="muted">Apply for School Readiness assistance or check status.</p>
             <a class="btn btn-blue" href="signin.html">Apply / View</a>
           </div>
@@ -69,35 +70,35 @@
       </div>
     </section>
 
-    <section style="padding:34px 0;">
+    <section class="section--content">
       <div class="container two-col-grid">
         <!-- Left: Detailed panels -->
         <div>
           <div class="panel">
-            <h3 class="card-title" style="color:var(--brand-blue)">Household at a Glance</h3>
+            <h3 class="card-title card-h3-blue">Household at a Glance</h3>
             <p class="muted">This section shows household members, contact information and a summary of recent activity.</p>
-            <ul id="hh-list" style="margin:12px 0 0;padding-left:18px;color:var(--muted)">
+            <ul id="hh-list" class="ul-muted">
               <li>Loading household members…</li>
             </ul>
           </div>
 
           <div class="panel">
-            <h3 class="card-title" style="color:var(--brand-green)">VPK Applications</h3>
+            <h3 class="card-title card-h3-green">VPK Applications</h3>
             <p class="muted">Your VPK applications and their status.</p>
-            <div id="vpk-list" style="margin-top:12px;color:var(--muted)">No VPK applications found.</div>
+            <div id="vpk-list" class="ul-muted">No VPK applications found.</div>
           </div>
         </div>
 
         <!-- Right: Quick actions / SR apps -->
         <aside>
           <div class="panel">
-            <h3 class="card-title" style="color:var(--brand-red)">School Readiness Applications</h3>
+            <h3 class="card-title card-h3-red">School Readiness Applications</h3>
             <p class="muted">Quick access to School Readiness applications and status checks.</p>
-            <div id="sr-list" style="margin-top:12px;color:var(--muted)">No School Readiness applications found.</div>
+            <div id="sr-list" class="ul-muted">No School Readiness applications found.</div>
           </div>
 
           <div class="panel">
-            <h4 style="margin:0 0 8px;color:var(--brand-blue)">Quick Links</h4>
+            <h4 class="quicklinks-title">Quick Links</h4>
             <ul style="padding-left:18px;margin:0;color:var(--muted)">
               <li><a href="signin.html">Manage account</a></li>
               <li><a href="signin.html">Start new application</a></li>

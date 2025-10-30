@@ -339,7 +339,9 @@
         var nav = document.getElementById('nav-actions'); if(!nav) return;
         var user = await isAuthenticated();
         if(user){
-          nav.innerHTML = '<li><button id="signout" class="btn btn-outline">Sign Out</button></li>';
+          // show 'My Profile' link and 'Sign Out' button when authenticated
+          nav.innerHTML = '<li><a id="profile-link" class="btn btn-inverse" href="/profile.html">My Profile</a></li>' +
+                          '<li><button id="signout" class="btn btn-outline">Sign Out</button></li>';
           document.getElementById('signout').addEventListener('click', signOut);
         } else {
           // default already shows Sign In / Sign Up; keep as-is

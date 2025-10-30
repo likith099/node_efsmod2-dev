@@ -100,3 +100,87 @@ a:hover { text-decoration: none; }
 
 /* Utility */
 .muted { color: var(--muted); }
+
+/* Utility classes to replace inline styles in HTML */
+.welcome-text { font-size:16px; font-weight:700; color:var(--brand-blue); }
+.welcome-user { font-size:16px; font-weight:600; color:var(--ink); }
+.summary-title { margin:0 0 6px; font-size:20px; color:var(--brand-blue); }
+.summary-subtitle { margin:0; color:var(--muted); }
+.summary-actions { display:flex; gap:8px; align-items:center; }
+.card-h3-blue { margin:0 0 8px; font-size:16px; color:var(--brand-blue); }
+.card-h3-green { margin:0 0 8px; font-size:16px; color:var(--brand-green); }
+.card-h3-red { margin:0 0 8px; font-size:16px; color:var(--brand-red); }
+.section--content { padding:34px 0; }
+.ul-muted { margin:12px 0 0; padding-left:18px; color:var(--muted); }
+.quicklinks-title { margin:0 0 8px; color:var(--brand-blue); }
+
+/* --- Styles adapted from Family Portal_ Family Profile.html snapshot --- */
+
+/* Fixed top navigation similar to snapshot */
+.site-header {
+  background: white;
+  box-shadow: 0px -1px 0px 0px #F1F1F1 inset;
+  position: fixed;
+  width: 100%;
+  z-index: 1100;
+  padding: 2rem 0;
+}
+.header-bar { padding: 0 20px; }
+
+/* Ensure main content clears the fixed header (matches snapshot spacing) */
+main { padding-top: 65pt; }
+
+/* Page header / breadcrumb style used in snapshot */
+.page-header.well { display:flex; align-items:center; margin: 0 -26px 20px; border-radius:0; border-right:none; border-left:none; box-shadow:none; padding:1rem 3rem; background:#fff; }
+.page-header.well .fontFP { color:#2D2D2D; background:#F8F7F5; font-weight:700; padding:10px; }
+.page-header.well .glyphicon { margin-right:8px; }
+
+/* Font utility from snapshot */
+.fontFP { font-size:18px !important; }
+.fontHeader { font-size:20px !important; }
+
+/* Panel border and heading styles */
+.panel-border { border: 1px solid #D2D2D2; }
+.panel-heading.big { padding: 15px; }
+.panel-title { font-size: 20px; font-weight:700; color:#0B4C6F; }
+
+/* Overview & summary blocks */
+.overview-panel { box-sizing:border-box; border-radius:5px; padding:10px; margin:5px 5px 30px 5px; }
+.overview-heading { font-size:18px; font-weight:bold; margin-bottom:10px; }
+.overview-section-heading { font-size:14px; font-weight:bold; color:#3864b2; }
+.header-bar-status { display:inline; color:#3864b2; font-size:12px; font-weight:bold; background:white; border:1px solid #cccccc; border-radius:10px; padding:2px 5px; position:relative; top:-3px; }
+
+/* Tables used in the profile snapshot */
+table.display.table-hover { width:100%; margin-bottom:1rem; border-collapse:separate; }
+table.display.table-hover thead tr { background:#F8F7F5; }
+table.display.table-hover th.title { font-size:14px; padding:8px; }
+table.display.table-hover td.title { padding:16px 8px; font-size:12px; color:#4B4B4B; background:#FFFFFF; }
+
+/* Buttons that appear in the original portal */
+.btn-success { border:1px solid #01689B; color:#01689B; border-radius:3px; box-shadow:none; background:#FFFFFF; display:inline-flex; align-items:center; }
+.btn-success svg { margin-right:8px; }
+.btn-primary, .btn-success, .btn-red, .btn-blue, .btn-green { font-size:14px; }
+
+/* Carousel minimal fallback styles so the helpful links area looks acceptable without slick.css */
+.carousel { margin-bottom: 30px; }
+.carousel .media { display:flex; gap:16px; align-items:center; }
+.carousel .media img { max-width:10em; max-height:10em; }
+
+/* Small utility tweaks matching snapshot spacing */
+.well-lg { padding: 1rem 1.5rem; border-radius:0; }
+.pull-right { float:right !important; }
+
+/* Title style used in some included fragments */
+.title { font-weight:700; }
+
+/* Modal popup sizing roughly matching snapshot */
+.popup { top:20px; max-height:95%; width:795px !important; margin:auto; overflow-y:auto; }
+
+/* Responsive adjustments similar to snapshot */
+@media (max-width:767px) {
+  .fontFP { font-size:14px !important; }
+  .page-header.well { padding:1rem; margin-bottom:1rem; }
+  main { padding-top: 90pt; }
+}
+
+/* End adapted snapshot styles */
