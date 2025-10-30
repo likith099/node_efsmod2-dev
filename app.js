@@ -36,7 +36,7 @@ if (process.env.SQL_SERVER || process.env.SQL_CONNECTION_STRING) {
 // Routes
 app.get("/", (req, res) => {
   // Serve the EFSMOD homepage
-  res.sendFile(__dirname + "/public/efsmod.html");
+  res.sendFile(__dirname + "/public/home.html");
 });
 
 // API status endpoint

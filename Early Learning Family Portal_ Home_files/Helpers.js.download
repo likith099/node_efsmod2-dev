@@ -1,0 +1,1084 @@
+﻿/**
+ *  Helpers module.
+ *
+ *  Module for providing common OEL helper services.
+ *
+ *  Dependencies: none.
+ *
+ *  Globals used: none.
+ */
+
+// Include this definition only if it hasn't already been included.
+if (typeof Helpers === 'undefined' || typeof Helpers.AdjustButtonState === 'undefined')
+{
+    var Helpers = (function ()
+    {
+        /****************************************************************************
+         *** Private static properties
+         ****************************************************************************/
+
+        /**
+         * The current count of open Bootstrap modals (ie. the "nesting level"), either opened directly by the framework
+         * or by other components after the framework has initialized its modal support.
+         */
+        var _BootstrapModalNestingLevel = 0;
+
+        /**
+         * The CSS z-index value of first open ("nesting level 0") modal.
+         */
+        var _ModalZIndexBase = 1040;
+
+        /**
+         * The value by which to increment the CSS z-index for each successively-nested modal.
+         */
+        var _ModalZIndexLevelIncrement = 10;
+
+        /**
+         * The value by which to offset the the CSS z-index when determining the CSS z-index for the modal backdrop.
+         */
+        var _ModalBackdropZIndexDelta = -1;
+
+        /**
+         * The collection of dispatcher tables for our UI sections.
+         */
+        var _UiSectionDispatchers = [];
+
+
+        // Initialize the Helpers module.
+        function classDefinition()
+        {
+            /*
+             *  Private properties.
+             */
+
+
+            /*
+             *  Public methods.
+             */
+        }
+
+
+        /****************************************************************************
+         *** Public static methods
+         ****************************************************************************/
+
+        /**
+         * Do initialization of modal support, primarily to supported nested modals.
+         */
+        classDefinition.InitializeNestedModalSupport = function ()
+        {
+            // Hook the "show" event for Bootstrap modals so that we can adjust the z-index of the newly-displayed
+            // modal and its backdrop.
+            $(document).on("show.bs.modal", ".modal", function ()
+            {
+                // Calculated the desired z-index of the new modal and the backdrop.
+                var modalZIndex = _ModalZIndexBase + (_BootstrapModalNestingLevel * _ModalZIndexLevelIncrement);
+                var backdropZIndex = modalZIndex + _ModalBackdropZIndexDelta;
+
+                // Apply the modal z-index.
+                $(this).css("z-index", modalZIndex);
+
+                // Apply the backdrop z-index after a short time-out because the backdrop is usually not yet displayed
+                // at the time that the "show.bs.modal" event is triggered. Also, mark the backdrop with the 'modal-stack'
+                // class so that we don't attempt to set its z-index again.
+                setTimeout(function ()
+                {
+                    $(".modal-backdrop").not(".modal-stack").css("z-index", backdropZIndex).addClass("modal-stack");
+                }, 0);
+
+                // Bump up our modal nesting level.
+                _BootstrapModalNestingLevel++;
+            });
+
+            // Hook the "hidden" event for Bootstrap modals so that we can add the "modal-open" class back to the document body
+            // if any modals are still visible. (Bootstrap removes the "modal-open" class form the document body when it closes a modal.)
+            $(document).on("hidden.bs.modal", ".modal", function ()
+            {
+                $(".modal:visible").length && $(document.body).addClass("modal-open");
+
+                // Bump down our modal nesting level, making sure to not go negative.
+                _BootstrapModalNestingLevel = Math.max(0, _BootstrapModalNestingLevel - 1);
+            });
+        }
+
+        /**
+         * Register commonly-needed validators with JQuery Validate.
+         */
+        classDefinition.RegisterCustomValidators = function()
+        {
+            jQuery.validator.addMethod(
+                "mandatoryCheckbox",
+                function (value, element)
+                {
+                    if (element.type != "checkbox")
+                    {
+                        return value == true;
+                    }
+                    else
+                    {
+                        return element.checked;
+                    }
+                },
+                "The check box must be selected."
+            );
+
+            jQuery.validator.addMethod(
+                "atLeastOneSelectedCheckbox",
+                function (value, element, name)
+                {
+                    // If the specified name matches the element's name, assume that all checkboxes in the
+                    // set are named identically.
+                    if (name === element.name)
+                    {
+                        return ($("input[type=checkbox][name='" + name + "']:checked", element.form).length >= 1);
+                    }
+                    else
+                    {
+                        // Else assume that the name specifies a "name starts with" designation.
+                        return ($("input[type=checkbox][name^='" + name + "']:checked", element.form).length >= 1);
+                    }
+                },
+                "Please select at least one item."
+            );
+
+            jQuery.validator.addMethod(
+                "maxSelectedCheckboxes",
+                function (value, element, validationArgs)
+                {
+                    var name = validationArgs[0];
+                    var maxSelections = validationArgs[1];
+
+                    // If the specified name matches the element's name, assume that all checkboxes in the
+                    // set are named identically.
+                    if (name === element.name)
+                    {
+                        return ($("input[type=checkbox][name='" + name + "']:checked", element.form).length <= maxSelections);
+                    }
+                    else
+                    {
+                        // Else assume that the name specifies a "name starts with" designation.
+                        return ($("input[type=checkbox][name^='" + name + "']:checked", element.form).length <= maxSelections);
+                    }
+                },
+                $.validator.format("Please select no more than {0} items.")
+            );
+
+            jQuery.validator.addMethod(
+                "mutuallyExclusiveCheckboxes",
+                function (value, element, validationArgs)
+                {
+                    var name = validationArgs[0];
+                    var mutexIndex = validationArgs[1];
+
+                    // If the specified name matches the element's name, assume that all checkboxes in the
+                    // set are named identically.
+                    if (name === element.name)
+                    {
+                        var mutexCheckbox = $("input[type=checkbox][name='" + name + "']", element.form)[mutexIndex];
+                        return (!mutexCheckbox.checked || $("[name='" + name + "']:checked", element.form).length == 1);
+                    }
+                    else
+                    {
+                        // Else assume that the name specifies a "name starts with" designation.
+                        var mutexCheckbox = $("input[type=checkbox][name^='" + name + "']", element.form)[mutexIndex];
+                        return (!mutexCheckbox.checked || $("[name^='" + name + "']:checked", element.form).length == 1);
+                    }
+                },
+                $.validator.format("Please select no more than one mutually exclusive item.")
+            );
+
+            jQuery.validator.addMethod(
+                "compareCaseInsensitive",
+                function (value, element, element2)
+                {
+                    var value2 = $(element2).val();
+                    return (value.toUpperCase() === value2.toUpperCase());
+                }
+            );
+
+            jQuery.validator.addMethod(
+                "dateRange",
+                function (value, element, rangeArgs)
+                {
+                    if (value === "")
+                    {
+                        return true;
+                    }
+
+                    var startDate = Date.parse(rangeArgs[0]);
+                    var endDate = Date.parse(rangeArgs[1]);
+                    var dateToValidate = Date.parse(value);
+
+                    if (isNaN(dateToValidate))
+                    {
+                        return false;
+                    }
+
+                    return ((startDate <= dateToValidate) && (dateToValidate <= endDate));
+                },
+                $.validator.format("Please specify a date between {0} and {1}.")
+            );
+
+            jQuery.validator.addMethod(
+                "dateGreaterThan",
+                function (value, element, value2)
+                {
+                    return (moment(value) > moment(value2));
+                },
+                jQuery.validator.format("Date cannot be less than {0}."));
+        }
+
+        // Adjusts the state of the specified item(s) (usually buttons) based
+        // on whether their action is current allowed and/or in-progress. If the item has
+        // the class "disabled", it will disabled regardless of the "isAllowed" parameter.
+        classDefinition.AdjustButtonState = function(items, isAllowed, inProgress)
+        {
+            $(items).each(function (index, item)
+            {
+                disable = !isAllowed | $(item).hasClass("disabled");
+                $(item).prop("disabled", disable).toggleClass("in-progress", inProgress);
+            });
+        }
+
+        /**
+         * Clears the selection state of all items of a select element, and sets the select element's value to -1.
+         *
+         * @param {object} form - form element containing the drop-down list.
+         * @param {string} selectName - name attribute of the HTML select element corresponding to the drop-down list.
+         */
+        classDefinition.ClearDropDownSelection = function (form, selectName)
+        {
+            var select = $("select[name='" + selectName + "']", form)[0];
+            if (select)
+            {
+                $("> option", form).prop("selected", false);
+                $(select).val(-1);
+            }
+        }
+
+        /**
+         * Sets the selected item of a select element.
+         *
+         * @param {object} form - form element containing the drop-down list.
+         * @param {string} selectName - name attribute of the select element corresponding to the drop-down list.
+         * @param {number} value - Numeric value of the item (option element) to select.
+         * @param {boolean} clearIfNotFound - true if the selection should be cleared if the specified value was not found. (Optional)
+         */
+        classDefinition.SetDropDownSelection = function (form, selectName, value, clearIfNotFound)
+        {
+            // Default clearIfNotFound to true.
+            if (typeof clearIfNotFound === 'undefined')
+            {
+                clearIfNotFound = true;
+            }
+
+            var optionToSelect = $("select[name='" + selectName + "'] > option[value='" + value + "']", form)[0];
+            if (optionToSelect)
+            {
+                optionToSelect.selected = true;
+            }
+            else if (clearIfNotFound)
+            {
+                Helpers.ClearDropDownSelection(form, selectName);
+            }
+        }
+
+        /**
+         * Formats a string by substituting arguments for the {0}, {1}, ... {n-1} fields.
+         *
+         * @param {string} template - Template string containing the fields to be replaced.
+         * @param {string[]} args - Array of arguments to substitute into the resulting string.
+         *
+         * @returns {string} A new string based on the template string, with the fields replaced
+         *                   with the corresponding arguments.
+         */
+        classDefinition.Format = function (template, args)
+        {
+            var result = template;
+
+            $.each(args, function (index, arg)
+            {
+                result = result.replace(new RegExp("\\{" + index + "\\}", "g"), arg);
+            });
+
+            return result;
+        }
+
+        /**
+         * Returns a date string formatted in the usual OEL fashion (mm/dd/yyyy).
+         *
+         * @param {Date} date - Date to format.
+         * @param {string} defaultValue - Value to return if Date is invalid.
+         *
+         * @returns {string} A date string formatted in the usual OEL fashion: mm/dd/yyyy, or default value if Date is invalid.
+         */
+        classDefinition.FormatDate = function (date, defaultValue)
+        {
+            if (date instanceof Date && !isNaN(date))
+            {
+                // Get basic date string values.
+                var day = date.getDate();
+                var month = date.getMonth() + 1;
+                var year = date.getFullYear();
+
+                // Pad with 0's as necessary.
+                day = (day < 10) ? "0" + day : day;
+                month = (month < 10) ? "0" + month : month;
+
+                // Generate date string in OEL's usual format.
+                return (month + "/" + day + "/" + year);
+            }
+            else
+            {
+                return (typeof (defaultValue) !== "undefined") ? defaultValue : "";
+            }
+        }
+
+        /**
+         * Returns a date adjusted by the specified number of days.
+         *
+         * @param {Date} date - The date to adjust.
+         * @param {number} days - The count of days by which to adjust the date.
+         *
+         * @returns {Date} A new instance of the date, adjusted by the specified number of days.
+         */
+        classDefinition.AddDays = function (date, days)
+        {
+            if (date === null)
+            {
+                return null;
+            }
+
+            var result = new Date(date);
+            result.setDate(result.getDate() + days);
+            return result;
+        }
+
+        /**
+         * Returns the date following the specified date.
+         *
+         * @param {Date} date - The date to adjust.
+         *
+         * @returns {Date} The date following the specified date.
+         */
+        classDefinition.NextDay = function (date)
+        {
+            return Helpers.AddDays(date, 1);
+        }
+
+        /**
+         * Returns the date preceding the specified date.
+         *
+         * @param {Date} date - The date to adjust.
+         *
+         * @returns {Date} The date preceding the specified date.
+         */
+        classDefinition.PreviousDay = function (date)
+        {
+            return Helpers.AddDays(date, -1);
+        }
+
+        /**
+         * Adds a progress spinner animation to an element (usually a button) and then disables the element.
+         *
+         * @param {string or object} progressElement - An HTML element (or a jQuery selector for it) to contain the "progress spinner".
+         * @param {object} searchRoot - Search root to pass to jQuery if progressElement is a string (otherwise not used).
+         *
+         * @returns {object} The spinner state information, or null if no spinner was added.
+         */
+        classDefinition.AddProgressSpinner = function(progressElement, searchRoot)
+        {
+            // If a progress element was specified, obtain the actual HTML element instance.
+            if (progressElement != null && typeof progressElement === 'string')
+            {
+                progressElement = searchRoot != null ? $(progressElement, searchRoot)[0] : $(progressElement)[0];
+            }
+
+            // If we have a valid progress element, add a progress spinner to it.
+            if (progressElement != null && typeof progressElement !== 'undefined')
+            {
+                var spinner = document.createElement("div");
+                $(spinner).addClass("progress-visual");
+                $(spinner).append("<i class='fa fa-spinner fa-spin fa-2x fa-fw'></i><span class='sr-only'>In progress...</span>")
+
+                // If this is a big verification button, we'll append to the text label rather than to the button itself.
+                if ($(progressElement).hasClass("big-verification-button"))
+                {
+                    $(".big-button-label", progressElement).append(spinner);
+                }
+                else
+                {
+                    $(progressElement).append(spinner);
+                }
+
+                var progressElementDisableState = $(progressElement).prop("disabled");
+                $(progressElement).prop("disabled", true).toggleClass("in-progress", true);
+
+                return {
+                    ProgressElement: progressElement,
+                    SearchRoot: searchRoot,
+                    PreviousDisableState: progressElementDisableState,
+                    Spinner: spinner
+                };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /**
+         * Removes a progress spinner animation from an element (usually a button) and then restores the disable state of the element.
+         *
+         * @param {object} spinnerState - The spinner state object returned by AddProgressSpinner.
+         */
+        classDefinition.RemoveProgressSpinner = function(spinnerState)
+        {
+            // Remove the progress spinner if one was added.
+            if (spinnerState != null)
+            {
+                $(spinnerState.ProgressElement).prop("disabled", spinnerState.PreviousDisableState).toggleClass("in-progress", false);
+                $(spinnerState.Spinner).remove();
+            }
+        }
+
+        /**
+         * Asynchronously carries out an AJAX operation.
+         *
+         * @param {string} url - URL for the request.
+         * @param {string} operation - HTTP operation ("GET", "PUT", "POST", etc).
+         * @param {object} formData - FormData object to send as the request's data payload.
+         * @param {string} requestName - Request name to use in error messages. If null, error messages will not be displayed.
+         * @param {object} callerContext - Caller-defined context to be passed to the completion handler.
+         * @param {function} completionHandler - Function to be called when the operation completes.
+         * @param {string or object} progressElement - An HTML element (or a jQuery selector for it) to contain a "progress spinner"
+         *                                             animation while the AJAX request is in progress (optional).
+         * @param {object} searchRoot - Search root to pass to jQuery if progressElement is a string (optional).
+         */
+        classDefinition.IssueAjaxAsyncRequest = function(url, operation, formData, requestName, callerContext, completionHandler, progressElement, searchRoot)
+        {
+            // Default progressElement to null.
+            if (typeof progressElement === 'undefined')
+            {
+                progressElement = null;
+            }
+
+            // Default searchRoot to null.
+            if (typeof searchRoot === 'undefined')
+            {
+                searchRoot = null;
+            }
+
+            // Add a progress spinner if a target element was provided.
+            var spinnerState = Helpers.AddProgressSpinner(progressElement, searchRoot);
+
+            // Issue the AJAX request.
+            $.ajax({
+                url: url,
+                type: operation,
+                data: formData,
+                async: true,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (responseData, status, xhr)
+                {
+                    // Remove the progress spinner if one was added.
+                    Helpers.RemoveProgressSpinner(spinnerState);
+
+                    // Although the status is "success", check to see if the web session actually timed out.
+                    var responseHeader = $.parseJSON(xhr.getResponseHeader('X-Responded-JSON'));
+                    var sessionTimedOut = (responseHeader != null && responseHeader.status === 401);
+
+                    // If the operation succeeded, call the completion handler if one was provided, indicating success.
+                    if (!sessionTimedOut)
+                    {
+                        if (completionHandler != null)
+                        {
+                            completionHandler(callerContext, true, status, xhr, responseData, null);
+                        }
+                    }
+                    else
+                    {
+                        // Else display the timeout error if a request name was provided, and call the completion handler, indicating failure.
+                        Helpers.HandleAjaxError(401, "", requestName);
+                        if (completionHandler != null)
+                        {
+                            xhr.status = 401;
+                            xhr.statusText = "Unuathorized";
+                            completionHandler(callerContext, false, status, xhr, null, xhr.statusText);
+                        }
+                    }
+                },
+                error: function (xhr, status, error)
+                {
+                    // Remove the progress spinner if one was added.
+                    Helpers.RemoveProgressSpinner(spinnerState);
+
+                    // The operation failed. Bah! Humbug!
+                    if (error == '' && xhr.responseJSON != '') error = xhr.responseJSON;
+
+                    // Display an error modal if a request name was provided.
+                    Helpers.HandleAjaxError(xhr.status, error, requestName);
+
+                    // Call the completion handler if one was provided, indicating failure.
+                    if (completionHandler != null)
+                    {
+                        completionHandler(callerContext, false, status, xhr, null, error);
+                    }
+                }
+            });
+        }
+
+        /**
+         * Display an error modal if a request name was provided.
+         *
+         * @param {number} status - HTTP status code.
+         * @param {string} error - HTTP error description string.
+         * @param {string} requestName - Request name to use in error messages. If null, error messages will not be displayed.
+         */
+        classDefinition.HandleAjaxError = function (status, error, requestName)
+        {
+            // Display an error modal if a request name was provided.
+            if (requestName != null)
+            {
+                var messages;
+                var details;
+                var recovery;
+
+                switch (status)
+                {
+                    case 400: // Bad Request
+                    case 406: // Not Acceptable
+                        messages = Helpers.Format("A problem was encountered while processing the <em>{0}</em> request.", [requestName]);
+                        details = error;
+                        recovery = null;
+                        break;
+
+                    case 401: // Unauthorized
+                        messages = Helpers.Format("A problem was encountered while processing the <em>{0}</em> request.", [requestName]);
+                        details = "Your web browsing session has expired.";
+                        recovery = "Log back into the web portal and retry your request.";
+                        break;
+
+                    default:
+                        messages = Helpers.Format("A problem was encountered while processing the <em>{0}</em> request.", [requestName]);
+                        details = null;
+                        recovery = "The problem may have been caused by a temporary network issue, and you may be able to resolve it by trying your request again.";
+                        break;
+                }
+
+                Helpers.ShowErrorDialog(
+                    Helpers.Format("Unable to complete {0} request", [requestName]),
+                    messages,
+                    details,
+                    recovery,
+                    null
+                );
+            }
+        }
+
+        /**
+         * Re-parses the unobtrusive validations for a form, in the event of dynamic content additions or a form-reload.
+         *
+         * @param {object or string} formOrID - Either the form or its form ID.
+         */
+        classDefinition.ReparseUnobtrusiveValidations = function (formOrID)
+        {
+            // Find the form.
+            var form = (typeof formOrID === 'string') ? $("#" + formOrID)[0] : formOrID;
+
+            if (form)
+            {
+                // Remove validation data added by the raw jquery.validate plug-in.
+                $(form).removeData("validator");
+
+                // Remove validation data added by the jquery unobtrusive plug-in.
+                $(form).removeData("unobtrusiveValidation");
+
+                // Re-parse the unobtrusive validations.
+                $.validator.unobtrusive.parse(form);
+            }
+        }
+
+        // Displays an error modal dialog with the specified title, summary, details, and solutions.
+        // The errorDetails and errorSolutions arguments are optional, and the corresponding sections will
+        // be displayed only with they were specified.
+        classDefinition.ShowErrorDialog = function (errorTitle, errorSummary, errorDetails, errorSolutions, primaryDialog)
+        {
+            $("#errorDialogTitle").html(errorTitle);
+            $("#errorDialogSummary").html(errorSummary);
+
+            if (errorDetails)
+            {
+                $("#errorDialogDetailsSection").show(0);
+                $("#errorDialogDetails").html(errorDetails);
+            }
+            else
+            {
+                $("#errorDialogDetailsSection").hide(0);
+                $("#errorDialogDetails").text("");
+            }
+
+            if (errorSolutions)
+            {
+                $("#errorDialogSolutionsSection").show(0);
+                $("#errorDialogSolutions").html(errorSolutions);
+            }
+            else
+            {
+                $("#errorDialogSolutionsSection").hide(0);
+                $("#errorDialogSolutions").text("");
+            }
+
+            // If a primary dialog was supplied, obscure it so that it doesn't bleed into the error dialog.
+            if (primaryDialog)
+            {
+                $(primaryDialog).addClass("obscured");
+
+                $("#errorDialog")
+                    .modal()
+                    .on('hidden.bs.modal', function (e)
+                    {
+                        $(primaryDialog).removeClass("obscured");
+                        $(this).off('hidden.bs.modal');
+                    });
+            }
+            else
+            {
+                $("#errorDialog").modal();
+            }
+        }
+
+        /**
+         * Registers a client instance to receive UI update notifications for a specific UI section.
+         *
+         * @param {string} uiSectionName - Name of UI section for which to receive notifications.
+         * @param {object} componentInstance - Component instance to receive notifications.
+         */
+        classDefinition.RegisterUISectionUpdateHandler = function (uiSectionName, componentInstance)
+        {
+            // Find the dispatch list for the specified section, or create an empty one if not found.
+            var sectionDispatchList = _UiSectionDispatchers[uiSectionName];
+            if (typeof sectionDispatchList === "undefined")
+            {
+                sectionDispatchList = [];
+                _UiSectionDispatchers[uiSectionName] = sectionDispatchList;
+            }
+
+            // Add a dispatch entry for the specified component instance.
+            sectionDispatchList.push(componentInstance);
+        }
+
+        /**
+         * Unregisters a client instance from receiving UI update notifications for a specific UI section.
+         *
+         * @param {string} uiSectionName - Name of UI section from which to stop receiving notifications.
+         * @param {object} componentInstance - Component instance to stop receiving notifications.
+         */
+        classDefinition.UnRegisterUISectionUpdateHandler = function (uiSectionName, componentInstance)
+        {
+            // Find the dispatch list for the specified section, or abort if not found.
+            var sectionDispatchList = _UiSectionDispatchers[uiSectionName];
+            if (typeof sectionDispatchList === "undefined")
+            {
+                return;
+            }
+
+            // Remove the first occurrence of the component instance from the dispatch list, if found.
+            var indexToRemove = sectionDispatchList.indexOf(componentInstance);
+            if (indexToRemove > -1)
+            {
+                sectionDispatchList.splice(indexToRemove, 1);
+            }
+        }
+
+        /**
+         * Dispatches all of the specified UI section update notifications.
+         *
+         * @param {object[]} uiSectionUpdates - A collection of section-name / section-content pairs.
+         */
+        classDefinition.DispatchUISectionUpdateNotifications = function (uiSectionUpdates)
+        {
+            // Only process if uiSectionUpdates is an array or is an object with a UISectionUpdates property.
+            if (typeof uiSectionUpdates === 'object' && uiSectionUpdates !== null && !Array.isArray(uiSectionUpdates))
+            {
+                uiSectionUpdates = uiSectionUpdates.UISectionUpdates;
+            }
+
+            if (Array.isArray(uiSectionUpdates))
+            {
+                // For each section-name / section-content pair.
+                uiSectionUpdates.forEach(function (nameAndContent)
+                {
+                    // Handle our internal framework UI updates first.
+                    if (nameAndContent.SectionName == "WizardProgressPane")
+                    {
+                        $("#WizardProgressPane").replaceWith(nameAndContent.SectionContent);
+                    }
+                    else
+                    {
+                        // If not a framework update, find the dispatcher list for the section name, or abort if not found.
+                        var sectionDispatchList = _UiSectionDispatchers[nameAndContent.SectionName];
+                        if (typeof sectionDispatchList === "undefined")
+                        {
+                            return;
+                        }
+
+                        // Send the section name and section content to each Handle_UISectionUpdate handler in the list.
+                        sectionDispatchList.forEach(function (componentInstance)
+                        {
+                            if (componentInstance.Handle_UISectionUpdate)
+                            {
+                                componentInstance.Handle_UISectionUpdate(nameAndContent.SectionName, nameAndContent.SectionContent);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        /**
+         * Replaces the contents of a templated section using a new set of data objects.
+         *
+         * @param {string} template - Template string containing the fields to be replaced.
+         * @param {object} targetElement - The HTML element whose children will be replaced with the new set of template instances.
+         * @param {object[]} dataObjects - Array of objects supplying the value data.
+         * @param {boolean} escapeHtmlChars - A value indicating whether HTML special characters in the
+         *                                    data object values should be escaped. To override this on a
+         *                                    per-field basis, append the suffix "_html" to the field name.
+         *
+         * @returns {number} The count of template instances generated.
+         *
+         * @remarks Replaceable fields in the template are specified by placing the field name in curly braces.
+         *          For instance, the template "Hello, {PersonName}!" and a data object containing
+         *          a property named "PersonName" with a value of "World" would yield the string
+         *          "Hello, World!".
+         */
+        classDefinition.RebuildTemplatedSection = function (template, targetElement, dataObjects, escapeHtmlChars)
+        {
+            var instanceCount = 0;
+
+            // Empty the target element of all its children.
+            $(targetElement).empty();
+
+            // Add a new templated instance for each data object instance.
+            dataObjects.forEach(function (dataObject)
+                {
+                    $(targetElement).append(
+                        Helpers.FormatFromObject(
+                            template,
+                            dataObject,
+                            escapeHtmlChars
+                        )
+                    );
+
+                    instanceCount++;
+                },
+                this
+            );
+
+            // Return the count of template instances added to the target element.
+            return instanceCount;
+        }
+
+        /**
+         * Formats a string by substituting input values as determined by the supplied data object.
+         *
+         * @param {string} template - Template string containing the fields to be replaced.
+         * @param {object} dataObject - The object supplying the value data.
+         * @param {boolean} escapeHtmlChars - A value indicating whether HTML special characters in the 
+         *                                    data object values should be escaped. To override this on a
+         *                                    per-field basis, append the suffix "_html" to the field name.
+         *
+         * @returns {string} A new string based on the template string, with the fields replaced
+         *                   with the corresponding property values from the data object.
+         *
+         * @remarks Replaceable fields in the template are specified by placing the field name in curly braces.
+         *          For instance, the template "Hello, {PersonName}!" and a data object containing
+         *          a property named "PersonName" with a value of "World" would yield the string
+         *          "Hello, World!".
+         */
+        classDefinition.FormatFromObject = function (template, dataObject, escapeHtmlChars)
+        {
+            var result = template;
+
+            // For each property in the data object, substitute it's value into the like-named references in the template.
+            for (var property in dataObject)
+            {
+                var value = dataObject[property];
+
+                // If we're supposed to "escape" HTML special characters and the value is a string, escape it.
+                if (escapeHtmlChars && typeof (value) === "string")
+                {
+                    // Escape it only if the property name does not end with "_html".
+                    if (property.indexOf("_html", this.length - 5) === -1)
+                    {
+                        value = Helpers.EscapeHtml(value);
+                    }
+                }
+
+                result = result.replace(new RegExp("\\{" + property + "\\}", "g"), value);
+            }
+
+            return result;
+        }
+
+        /**
+         * Formats a string by substituting input values as determined by the supplied data objects.
+         *
+         * @param {string} template - Template string containing the fields to be replaced.
+         * @param {object[]} dataObjects - Array of objects supplying the value data.
+         * @param {boolean} escapeHtmlChars - A value indicating whether HTML special characters in the
+         *                                    data object values should be escaped. To override this on a
+         *                                    per-field basis, append the suffix "_html" to the field name.
+         *
+         * @returns {string} A new string based on the template string, with the fields replaced
+         *                   with the corresponding property values from the data objects.
+         *
+         * @remarks Replaceable fields in the template are specified by placing the field name in curly braces.
+         *          For instance, the template "Hello, {PersonName}!" and a data object containing
+         *          a property named "PersonName" with a value of "World" would yield the string
+         *          "Hello, World!".
+         */
+        classDefinition.FormatFromObjects = function (template, dataObjects, escapeHtmlChars)
+        {
+            var result = template;
+
+            // Make a substitution pass for each data object in the collection.
+            dataObjects.forEach(function (dataObject)
+                {
+                    result = Helpers.FormatFromObject(
+                        result,
+                        dataObject,
+                        escapeHtmlChars
+                    )
+                },
+                this
+            );
+
+            return result;
+        }
+
+        classDefinition.SetState = function (componentInstance, stateName, value) {
+            // If the component state collection doesn't exist.
+            if (!componentInstance.CompState) {
+                // Initialize it.
+                componentInstance.CompState = {};
+            }
+
+            // If the specified state is not currently being tracked.
+            if (typeof (componentInstance.CompState[stateName]) === "undefined") {
+                // Initialize it's tracking state.
+                componentInstance.CompState[stateName] = { Value: undefined, Listeners: [] };
+            }
+
+            // If the value has changed...
+            var state = componentInstance.CompState[stateName];
+            var previousValue = state.Value;
+            if (state.Value !== value) {
+                // Update (or initialize) the state value.
+                state.Value = value;
+
+                // Notify any state-change listeners.
+                if (state.Listeners.length > 0) {
+                    state.Listeners.forEach(function (listener) {
+                        listener.FnListener(componentInstance, stateName, value);
+                    });
+                }
+            }
+
+            // Return the previous value (or undefined if it was previously undefined).
+            return previousValue;
+        }
+
+        classDefinition.GetState = function (componentInstance, stateName) {
+            // If the component state collection exists.
+            if (componentInstance.CompState) {
+                // If the state exists.
+                if (typeof (componentInstance.CompState[stateName]) !== "undefined") {
+                    // Return the value of state.
+                    return componentInstance.CompState[stateName].Value;
+                }
+            }
+
+            // Else the state isn't being tracked yet, so return undefined.
+            return undefined;
+        }
+
+        /**
+         * Smoothly scrolls the specified element to the top of the wizard content view (or as close as possible).
+         *
+         * @param {object} element - The element to scroll into view.
+         */
+        classDefinition.SmoothScrollToTop = function (element) {
+            // Try to get the appropriate scrollable parent for a wizard view.
+            var scrollableParent = $(element).closest('.wizard-panel-body-content')[0];
+
+            // If no scrollable parent found for a wizard view, search for a scrollable parent for a modal dialog.
+            if (!scrollableParent) {
+                scrollableParent = $(element).closest('.modal-body')[0];
+            }
+
+            // If we found a scrollable parent, attempt the scroll operation.
+            if (scrollableParent) {
+                $(scrollableParent).stop().animate({ scrollTop: $(element).position().top - $(scrollableParent).position().top }, 1000);
+            }
+        }
+
+        /** 
+         * Escapes HTML special characters in a string so that it can be safely inserted as plain (non-markup) text into a stream of HTML.
+         *
+         * @param {string} potentiallyUnsafeText - The text to be cleansed of HTML special characters.
+         *
+         * @returns {string} A copy of potentiallyUnsafeText that has HTML special characters escaped.
+         */
+        classDefinition.EscapeHtml = function (potentiallyUnsafeText) 
+        {
+            return potentiallyUnsafeText.replace(/[\"&<>]/g, function (a) {
+                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+            });
+        }
+
+        /**
+         * Unescapes escaped HTML/XML special characters in a string so that it can be safely inserted as markup text into a stream of HTML.
+         *
+         * @param {string} potentiallyUnsafeText - The text to be cleansed of HTML/XML special characters.
+         *
+         * @returns {string} A copy of potentiallyUnsafeText that has HTML/XML special characters unescaped.
+         */
+        classDefinition.UnescapeHtml = function unescapeHtml(potentiallyUnsafeText) {
+            return potentiallyUnsafeText.replace(/&amp;|&lt;|&gt;|&#39;|&quot;/g, function (a) {
+                return {
+                    '&quot;': '"', '&#39;': "'", '&amp;': '&', '&lt;': '<', '&gt;':'>' }[a];
+            });
+        }
+
+        /** 
+         * Determines whether the specified string null, undefined, or empty ("").
+         *
+         * @param {string} str - The string to evaluate.
+         *
+         * @returns {boolean} A value indicating whether the string is null, undefined, or empty.
+         */
+        classDefinition.IsNullOrEmpty = function (str)
+        {
+            return (!str || str.length === 0);
+        }
+
+        /** 
+         * Determines whether the specified string null, undefined, empty (""), or consists only of white space characters.
+         *
+         * @param {string} str - The string to evaluate.
+         *
+         * @returns {boolean} A value indicating whether the string is null, undefined, empty, or consists only of white space characters.
+         */
+        classDefinition.IsNullOrWhiteSpace = function (str)
+        {
+            return (!str || str.length === 0 || !/\S/.test(str));
+        }
+
+        /**
+         * Resets the fields of a form, including the validation information.
+         *
+         * @param {object or string} formOrID - Either the form or its form ID.
+         */
+        classDefinition.ResetForm = function (formOrID) 
+        {
+            // Find the form.
+            var form = (typeof formOrID === 'string') ? $("#" + formOrID)[0] : formOrID;
+
+            // Do a regular form reset.
+            form.reset();
+
+            // De-select all values from selection elements.
+            $("select", form).each(function (index, select) {
+                Helpers.ClearDropDownSelection(form, select.name);
+            });
+
+            // Clear all date input fields.
+            $("input[type='date']", form).each(function (index, input) {
+                $(input).val("");
+            });
+
+            // get the document(s) display and templates and clear them out.
+            var existingDocs = $(".existing-docs", form);
+            if (existingDocs) existingDocs.remove();
+            $("[data-template-insert='UploadDocumentsListing']", form).each(function (idx, docsList) {
+                $(docsList).empty();
+            });
+            $("[data-template-insert='UploadDocumentsMissing']", form).each(function (idx, docsMissing) {
+                $(docsMissing).empty();
+            });
+
+            // Do a validation reset.
+            if ($(form).validate)
+            {
+                var validator = $(form).validate();
+                validator.resetForm();
+            }
+
+            // Reset unobtrusive validation summary, if it exists.
+            $(form).find("[data-valmsg-summary=true]")
+                .removeClass("validation-summary-errors")
+                .addClass("validation-summary-valid")
+                .find("ul").empty();
+
+            // Reset unobtrusive validation fields, if they exist.
+            $(form).find("[data-valmsg-replace=true]")
+                .removeClass("field-validation-error")
+                .addClass("field-validation-valid")
+                .empty();
+
+            // Reset unobtrusive validation fields, if they exist.
+            $(form).find("*").removeClass("input-validation-error");
+        }
+
+        /**
+         * Validates the from and scrolls the first validation error (if any) into view.
+         *
+         * @param {object or string} formOrID - Either the form or its form ID.
+         */
+        classDefinition.ValidateFormAndScrollToError = function (formOrID) 
+        {
+            // Find the form.
+            var form = (typeof formOrID === 'string') ? $("#" + formOrID)[0] : formOrID;
+
+            // Validate form, and scroll the first error into view if the form data is not valid yet.
+            var result = $(form).valid();
+            if (!result)
+            {
+                var firstError = $(".field-validation-error", form)[0];
+                if (firstError)
+                {
+                    // Scroll the error into view.
+                    firstError.scrollIntoView(false);
+                }
+            }
+
+            return result;
+        }
+
+        /**
+         * Scrolls the form's first validation error (if any) into view.
+         *
+         * @param {object or string} formOrID - Either the form or its form ID.
+         */
+        classDefinition.ScrollToFirstError = function (formOrID) 
+        {
+            // Find the form.
+            var form = (typeof formOrID === 'string') ? $("#" + formOrID)[0] : formOrID;
+
+            // Scroll the first error into view.
+            var firstError = $(".field-validation-error", form)[0];
+            if (firstError)
+            {
+                // Scroll the error into view.
+                firstError.scrollIntoView(false);
+            }
+        }
+
+        // Return the class definition as part of JavaScript's quasi-class support.
+        return classDefinition;
+    })();
+}

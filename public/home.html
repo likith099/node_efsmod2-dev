@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>EFSMOD Portal: Home</title>
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z0N0Y0NDKZ"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'G-Z0N0Y0NDKZ');
+    </script>
+
+    <!-- Stylesheets -->
+    <link href="/css/flwins-styles.css" rel="stylesheet">
+    <link href="/css/flwins-components.css" rel="stylesheet">
+    <link href="/css/portal.css" rel="stylesheet">
+    <link href="/css/efsmod-home.css" rel="stylesheet">
+    <link href="/styles.css" rel="stylesheet">
+
+    <!-- Scripts -->
+    <script src="/js/flwins-main.js"></script>
+    <script src="/js/portal-nav.js"></script>
+    <script src="/js/efsmod-home.js"></script>
+
+    <script type="text/javascript">
+        function noBack() { window.history.forward() }
+        noBack();
+        window.onload = noBack;
+        window.onpageshow = function (evt) { if (evt.persisted) noBack() }
+        window.onunload = function () { void (0) }
+    </script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: white;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* Navigation Styles */
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0px -1px 0px 0px #F1F1F1 inset;
+            background: white;
+            position: fixed;
+            width: 100%;
+            z-index: 10;
+            padding: 2rem;
+        }
+
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-nav {
+            background: #01689B;
+            color: #FFFFFF;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
+            box-shadow: none;
+            padding: 10px 20px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: none;
+            transition: background 0.3s;
+        }
+
+        .btn-nav:hover {
+            background: #014d73;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            position: relative;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: auto;
+            max-height: 500px;
+            object-fit: cover;
+        }
+
+        .hero-signin {
+            position: absolute;
+            bottom: -100px;
+            right: 8%;
+            background: #01689B;
+            padding: 32px;
+            z-index: 1;
+            max-width: 400px;
+            border-radius: 3px;
+        }
+
+        .hero-signin h2 {
+            color: #ffffff;
+            font-size: 32px;
+            text-align: left;
+            font-weight: 400;
+            margin-top: 0;
+        }
+
+        .hero-signin h3 {
+            color: #ffffff;
+            font-size: 20px;
+            margin-bottom: 2rem;
+            text-align: left;
+        }
+
+        .hero-signin .signin-link {
+            background: #FFFFFF;
+            height: 48px;
+            font-weight: 700;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            padding: 0 15px;
+            justify-content: center;
+            box-shadow: none;
+            color: #01689B;
+            border: 1px solid #01689B;
+            text-decoration: none;
+            gap: 10px;
+        }
+
+        .hero-signin .signin-link:hover {
+            background: #f0f0f0;
+        }
+
+        /* Container Styles */
+        .main-container {
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 20pt;
+            margin-top: 12rem;
+            max-width: 1200px;
+            padding: 0 20px;
+        }
+
+        .intro-text {
+            color: #2D2D2D;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .service-card {
+            border: 1px solid #D2D2D2;
+            border-radius: 4px;
+            height: 100%;
+            position: relative;
+            background: white;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            height: 4px;
+            border-top-left-radius: 3px;
+            border-top-right-radius: 3px;
+        }
+
+        .card-header.red { background-color: #AE0C06; }
+        .card-header.blue { background-color: #01689B; }
+        .card-header.green { background-color: #248641; }
+
+        .card-title {
+            font-size: 20px;
+            padding: 20px 15px 5px 15px;
+            font-weight: 600;
+        }
+
+        .card-title.red { color: #AE0C06; }
+        .card-title.blue { color: #01689B; }
+        .card-title.green { color: #248641; }
+
+        .card-body {
+            color: #2D2D2D;
+            padding: 5px 15px 15px 15px;
+            font-weight: 400;
+            font-size: 14px;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            padding: 15px;
+        }
+
+        .card-button {
+            position: relative;
+            font-weight: 700;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: none;
+            color: #FFF;
+            padding: 12px 15px;
+            text-decoration: none;
+            transition: opacity 0.3s;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .card-button:hover {
+            opacity: 0.9;
+        }
+
+        .card-button.red { background: #AE0C06; }
+        .card-button.blue { background: #01689B; }
+        .card-button.green { background: #248641; }
+
+        .card-button span {
+            font-weight: 400;
+            font-size: 13px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            padding: 20px;
+            margin-top: 40px;
+            border-top: 1px solid #F1F1F1;
+        }
+
+        .footer div {
+            margin-bottom: 15px;
+        }
+
+        .footer a {
+            color: #01689B;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-dialog {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 0;
+            border: 1px solid #888;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 5px;
+        }
+
+        .modal-header {
+            background-color: #01689B;
+            color: white;
+            padding: 15px 20px;
+            border-top-left-radius: 5px;
+            border-top-right-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            border: none;
+            background: none;
+        }
+
+        .close:hover {
+            opacity: 0.8;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #ddd;
+            text-align: right;
+        }
+
+        .modal-footer button {
+            padding: 10px 20px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-default {
+            background: #fff;
+            color: #333;
+            border: 1px solid #ccc;
+        }
+
+        .btn-primary {
+            background: #01689B;
+            color: white;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 767px) {
+            .nav-header {
+                padding: 1rem;
+            }
+
+            .hero-signin {
+                position: relative;
+                bottom: auto;
+                right: auto;
+                margin: 20px;
+                max-width: none;
+            }
+
+            .hero-signin h2 {
+                font-size: 18px;
+            }
+
+            .hero-signin h3 {
+                font-size: 16px;
+            }
+
+            .main-container {
+                margin-top: 2rem;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                flex-direction: column;
+                gap: 5px;
+            }
+
+            .btn-nav {
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .mobile-only {
+                display: none !important;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .desktop-only {
+                display: none !important;
+            }
+        }
+
+        /* SVG Icons */
+        .icon-user {
+            width: 21px;
+            height: 20px;
+        }
+
+        .icon-arrow {
+            width: 25px;
+            height: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation Header -->
+    <nav class="nav-header">
+        <div class="nav-logo">
+            <img class="desktop-only" src="/images/logo.png" alt="EFSMOD Logo" style="height: 40px;">
+            <img class="mobile-only" src="/images/logo-mobile.png" alt="EFSMOD Logo" style="height: 30px;">
+            <label class="desktop-only" style="font-family: 'High Tower Text'; font-size: 20px; color: #ff0000;">
+                DEV EFSMOD Portal
+            </label>
+            <label class="mobile-only" style="font-family: 'High Tower Text'; font-size: 14px; color: #ff0000;">
+                DEV EFSMOD Portal
+            </label>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="/signin" class="btn-nav" aria-label="Sign in to EFSMOD Portal">
+                <svg class="icon-user desktop-only" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M10.2852 3.33464C8.44421 3.33464 6.95182 4.82702 6.95182 6.66797C6.95182 8.50892 8.44421 10.0013 10.2852 10.0013C12.1261 10.0013 13.6185 8.50892 13.6185 6.66797C13.6185 4.82702 12.1261 3.33464 10.2852 3.33464ZM5.28516 6.66797C5.28516 3.90655 7.52373 1.66797 10.2852 1.66797C13.0466 1.66797 15.2852 3.90655 15.2852 6.66797C15.2852 9.42939 13.0466 11.668 10.2852 11.668C7.52373 11.668 5.28516 9.42939 5.28516 6.66797ZM6.95182 15.0013C5.57111 15.0013 4.45182 16.1206 4.45182 17.5013C4.45182 17.9615 4.07873 18.3346 3.61849 18.3346C3.15825 18.3346 2.78516 17.9615 2.78516 17.5013C2.78516 15.2001 4.65064 13.3346 6.95182 13.3346H13.6185C15.9197 13.3346 17.7852 15.2001 17.7852 17.5013C17.7852 17.9615 17.4121 18.3346 16.9518 18.3346C16.4916 18.3346 16.1185 17.9615 16.1185 17.5013C16.1185 16.1206 14.9992 15.0013 13.6185 15.0013H6.95182Z" fill="white"/>
+                </svg>
+                Sign In
+            </a>
+
+            <button type="button" class="btn-nav" onclick="openSignUpModal()" aria-label="Sign up for EFSMOD Portal">
+                <svg class="icon-user desktop-only" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 19C3.69137 16.6928 5.46998 16 9.5 16C13.53 16 15.3086 16.6928 16 19" stroke="#fff" stroke-width="1.75" stroke-linecap="round"/>
+                    <path d="M13 9.5C13 11.433 11.433 13 9.5 13C7.567 13 6 11.433 6 9.5C6 7.567 7.567 6 9.5 6C11.433 6 13 7.567 13 9.5Z" stroke="#fff" stroke-width="1.75"/>
+                    <path d="M15 6H21" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M18 3L18 9" stroke="#fff" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Sign Up
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <img src="/images/hero-image.jpg" alt="EFSMOD Portal Banner" class="hero-image">
+            
+            <div class="hero-signin desktop-only">
+                <h2>Welcome to <span style="font-weight: 700;">EFSMOD Portal</span></h2>
+                <h3>Already have an EFSMOD Portal account?</h3>
+                <a href="/signin" class="signin-link" aria-label="Sign in to EFSMOD Portal">
+                    <span style="font-weight: 400;">Sign in here</span>
+                    <svg class="icon-arrow" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="#01689B"/>
+                    </svg>
+                </a>
+            </div>
+        </section>
+
+        <!-- Mobile Sign In Section -->
+        <div class="mobile-only" style="margin: 0 15px 15px;">
+            <div style="background: #01689B; padding: 20px; border-radius: 3px;">
+                <h2 style="color: #ffffff; font-size: 18px; text-align: left; font-weight: 400; margin-top: 0;">
+                    Welcome to <span style="font-weight: 700; font-size: 20px;">EFSMOD Portal</span>
+                </h2>
+                <h3 style="color: #ffffff; font-size: 16px; margin-bottom: 2rem; text-align: left;">
+                    Already have an EFSMOD Portal account?
+                </h3>
+                <a href="/signin" class="signin-link" aria-label="Sign in to EFSMOD Portal">
+                    <span style="font-weight: 400;">Sign in here</span>
+                    <svg class="icon-arrow" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="#01689B"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Container -->
+        <div class="main-container">
+            <div class="intro-text">
+                <p>
+                    Welcome to the EFSMOD Portal. This portal provides access to essential services and information 
+                    for families in Florida. You can apply for various programs and services online by clicking on 
+                    the <strong>Apply for</strong> buttons below.
+                </p>
+            </div>
+
+            <!-- Service Cards -->
+            <div class="cards-grid">
+                <!-- Card 1: Resource & Referral -->
+                <div class="service-card">
+                    <div class="card-header red"></div>
+                    <div class="card-title red">Resource & Referral</div>
+                    <div class="card-body">
+                        The EFSMOD Resource and Referral Network helps families locate quality services and programs.
+                        Trained specialists offer information about local options and develop customized lists based on each family's specific needs.
+                        Financial assistance strategies and referrals to other community resources are also available.
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" target="_blank" class="card-button red" aria-label="Learn more about Resource and Referral">
+                            <span>Learn More About R&R</span>
+                            <svg class="icon-arrow" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 2: Service Application -->
+                <div class="service-card">
+                    <div class="card-header blue"></div>
+                    <div class="card-title blue">Service Application</div>
+                    <div class="card-body">
+                        The EFSMOD Service Application offers access to essential programs for eligible families,
+                        helping them achieve their goals and ensuring successful outcomes.
+                        Services vary based on individual needs and range from direct assistance to comprehensive support programs.
+                    </div>
+                    <div class="card-footer">
+                        <a href="/signin" class="card-button blue" aria-label="Apply for Service Application">
+                            <span>Apply for Services</span>
+                            <svg class="icon-arrow" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Card 3: Program Enrollment -->
+                <div class="service-card">
+                    <div class="card-header green"></div>
+                    <div class="card-title green">Program Enrollment</div>
+                    <div class="card-body">
+                        The EFSMOD Program Enrollment provides access to specialized programs designed to support families.
+                        These programs prepare participants for success through comprehensive services and support.
+                        Parents can choose from various program options tailored to their family's specific needs and circumstances.
+                    </div>
+                    <div class="card-footer">
+                        <a href="/signin" class="card-button green" aria-label="Apply for Program Enrollment">
+                            <span>Apply for Programs</span>
+                            <svg class="icon-arrow" viewBox="0 0 25 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5.54785 13V11.5986H16.8682L12.2607 6.99121L13.2451 6L19.5479 12.3027L13.2451 18.5986L12.2607 17.6074L16.8682 13H5.54785Z" fill="white"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div>
+            Please contact your <a href="#" target="_blank">local support center</a> for immediate assistance.
+        </div>
+        <div>
+            This site is best viewed with Microsoft Edge. Download the latest version of <a target="_blank" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
+        </div>
+        <div>
+            If you are using an Apple device (iPad, iPhone, Mac computer, MacBook), please download and use 
+            <a target="_blank" href="https://www.google.com/chrome/">Google Chrome</a>, instead of Safari, to complete your application.
+        </div>
+    </footer>
+
+    <!-- Sign Up Modal -->
+    <div id="signUpModal" class="modal">
+        <div class="modal-dialog">
+            <div class="modal-header">
+                <h4 class="modal-title">
+                    <span style="font-size: 1.25em;">ℹ</span> Single Sign-On
+                </h4>
+                <button class="close" onclick="closeSignUpModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    With the most recent updates, the EFSMOD Portal will now be accessed using Single Sign-On (SSO). 
+                    Once you complete set up through SSO, return to the EFSMOD Portal and click the Sign In button.
+                </p>
+                <p>
+                    For additional details and instructions, click <a target="_blank" href="/docs/setup-guide.pdf">this link</a> 
+                    to download the set-up support document.
+                </p>
+                <button type="button" class="btn-nav" onclick="proceedToSignUp()" style="width: 100%; justify-content: center;">
+                    Proceed to Single Sign-On (SSO) →
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-default" onclick="closeSignUpModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal Functions
+        function openSignUpModal() {
+            document.getElementById('signUpModal').style.display = 'block';
+        }
+
+        function closeSignUpModal() {
+            document.getElementById('signUpModal').style.display = 'none';
+        }
+
+        function proceedToSignUp() {
+            window.location.href = '/create-account';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('signUpModal');
+            if (event.target == modal) {
+                closeSignUpModal();
+            }
+        }
+
+        // Scroll to top
+        window.top.scrollTo(0, 0);
+    </script>
+</body>
+</html>

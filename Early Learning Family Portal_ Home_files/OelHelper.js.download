@@ -1,0 +1,143 @@
+﻿// Helpers namespace name
+// requires <script src="/Scripts/OelHelper.js"></script>, included by default for the Coalition, Family, and Provider portals.
+var Helpers = Helpers || {};
+
+// OelHelper class implementation
+// This class implments OelHelper properties and methods
+Helpers.OelHelper = function () {
+    // public properties
+};
+
+// constructor
+Helpers.OelHelper.prototype.init = function () {
+};
+
+Helpers.OelHelper.prototype.wait = function (ms) {
+	/// <summary>Wait timer to simulate a long running process, defaults to one second.</summary>
+	/// <param name="ms" type="number" default>Time to wait in milliseconds, defaults to one second.</param>
+	if (ms == null) ms = 1000; //default to one second
+	var start = new Date().getTime();
+	var end = start;
+	while (end < start + ms) {
+		end = new Date().getTime();
+	}
+};
+// returns the current program year
+Helpers.OelHelper.prototype.getCurrentYear = function () {
+    var oDate = new Date();
+    return oDate.getFullYear();
+};
+
+// returns the current program year
+Helpers.OelHelper.prototype.getProgramYear = function() {
+    var oDate = new Date();
+    var year = oDate.getFullYear();
+    var month = oDate.getMonth();
+
+    if (month < 6)
+        return year - 1;
+
+    return year;
+};
+
+// Returns a date object fiscal / program year
+Helpers.OelHelper.prototype.getProgramYearFromDate = function (date) {
+    var year = date.getFullYear();
+    var month = date.getMonth();
+
+    return (month < 6) ? year - 1 : year;
+};
+
+
+// get fiscal year end date by date passed in
+Helpers.OelHelper.prototype.getDateWithoutTime = function (date) {
+    return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+};
+
+
+// get fiscal year start date by date passed in
+Helpers.OelHelper.prototype.getProgramYearStartDate = function (programYear) {
+    return new Date(programYear, 6, 1);
+};
+
+// get fiscal year end date by date passed in
+Helpers.OelHelper.prototype.getProgramYearEndDate = function (programYear) {
+    return new Date(Number(programYear) + 1, 5, 30);
+};
+
+// Returns a date object as a string "MM/dd/yyyy"
+Helpers.OelHelper.prototype.getFormattedDateString = function(date) {
+    return ("0" + (date.getMonth() + 1)).slice(-2) + "/" + ("0" + date.getDate()).slice(-2) + "/" + date.getFullYear();
+};
+
+// Returns a date object as a string "MM/dd/yyyy"
+Helpers.OelHelper.prototype.getFileNameDateString = function (date) {
+    return ("0" + (date.getMonth() + 1)).slice(-2) + ("0" + date.getDate()).slice(-2) + date.getFullYear();
+};
+
+// Returns a date string ("M/d/yyyy") as a string "MM/dd/yyyy"
+Helpers.OelHelper.prototype.getFormattedStringDate = function(strDate) {
+    if (strDate === "") return strDate;
+
+    var arrDate = strDate.split("/");
+    if (arrDate.length === 0) return "";
+
+    return ("0" + arrDate[0]).slice(-2) + "/" + ("0" + arrDate[1]).slice(-2) + "/" + arrDate[2];
+};
+
+// get fiscal year start date by date passed in
+Helpers.OelHelper.prototype.getFiscalYearStartDate = function (fiscalDate) {
+    var year = fiscalDate.getFullYear();
+    var month = fiscalDate.getMonth();
+    if (month < 6)
+        year -= 1;
+
+    return new Date(year, 6, 1);
+};
+
+// get fiscal year end date by date passed in
+Helpers.OelHelper.prototype.getFiscalYearEndDate = function (fiscalDate) {
+    var year = fiscalDate.getFullYear();
+    var month = fiscalDate.getMonth();
+    if (month > 5)
+        year += 1;
+
+    return new Date(year, 5, 30);
+};
+
+// Get query string parameter from URL using name
+Helpers.OelHelper.prototype.getParam = function (name) {
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(window.location.href);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
+};
+
+// Is valid email
+Helpers.OelHelper.prototype.isValidEmail = function (email) {
+    var regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return regEx.test(email);
+};
+
+Helpers.OelHelper.prototype.getFormattedPhoneNumber = function (phoneNumberString) {
+    var cleaned = ('' + phoneNumberString).replace(/\D/g, '')
+    var match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/)
+
+    if (match) {
+        return '(' + match[1] + ') ' + match[2] + '-' + match[3]
+    }
+
+    return null
+};
+
+if (!String.prototype.startsWith) {
+    String.prototype.startsWith = function (searchString, position) {
+        position = position || 0;
+        return this.substr(position, searchString.length) === searchString;
+    };
+}
+
+// single global static instance to use this helper class anywhere
+var OelHelper = new Helpers.OelHelper();
