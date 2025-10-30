@@ -3,129 +3,317 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta http-equiv="X-UA-Compatible" content="IE=10" />
   <title>Early Learning Family Portal: Home</title>
-  <link rel="icon" type="image/png" href="../Early Learning Family Portal_ Home_files/logoNew.png" />
-  <link href="/css/landing.css" rel="stylesheet" />
-</head>
-<body id="DocumentBody">
-  <!-- Site Header -->
-  <header class="site-header">
-    <div class="container header-bar">
-      <div class="brand">
-        <img class="brand__logo hidden-xs" src="../Early Learning Family Portal_ Home_files/logoNew.png" alt="Florida Early Learning Logo" />
-        <span class="brand__env hidden-xs" aria-label="Environment Badge">DEV Family Portal</span>
-      </div>
+  <style>
+    :root {
+      --brand-blue: #01689B;
+      --brand-green: #248641;
+      --brand-red: #AE0C06;
+      --ink: #1b1e24;
+      --muted: #5a6270;
+      --border: #e6e9ef;
+      --bg-soft: #f6f8fb;
+      --shadow-sm: 0 2px 10px rgba(0,0,0,.08);
+      --shadow-md: 0 8px 24px rgba(0,0,0,.12);
+      --radius-pill: 999px;
+    }
 
-      <nav class="primary-nav" aria-label="Primary">
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: white;
+      overflow-x: hidden;
+    }
+
+  a { color: var(--brand-blue); text-decoration: none; }
+  /* Remove underline on hover for buttons/links to match design */
+  a:hover { text-decoration: none; }
+
+    /* Header */
+    .site-header {
+      background: white;
+      border-bottom: 1px solid #dfe3eb;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .header-bar {
+      max-width: 1200px;
+      margin: auto;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand__logo {
+      max-height: 48px;
+      width: auto;
+    }
+
+    .brand__env {
+      font-weight: 600;
+      color: #AE0C06;
+      font-size: 16px;
+    }
+
+    .nav-actions {
+      list-style: none;
+      display: flex;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 18px;
+      font-weight: 600;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline {
+      color: var(--brand-blue);
+      border: 2px solid var(--brand-blue);
+      background: transparent;
+    }
+    .btn-outline:hover {
+      background: var(--brand-blue);
+      color: white;
+    }
+
+    .btn-primary {
+      background: var(--brand-blue);
+      color: white;
+      border: 2px solid var(--brand-blue);
+    }
+    .btn-primary:hover {
+      background: #045b8a;
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+    }
+    .hero__image {
+      width: 100%;
+      height: clamp(360px, 60vw, 520px);
+      object-fit: cover;
+      filter: brightness(0.9);
+    }
+    .hero__overlay-card {
+      position: absolute;
+      right: 6%;
+      bottom: 40px;
+      background: var(--brand-blue);
+      color: white;
+      padding: 28px;
+      border-radius: 14px;
+      box-shadow: var(--shadow-md);
+      max-width: 400px;
+    }
+    .hero__overlay-card h2 {
+      margin: 0 0 8px;
+      font-weight: 700;
+      font-size: 24px;
+    }
+    .hero__overlay-card p {
+      margin: 0 0 16px;
+      opacity: 0.95;
+    }
+    .btn-inverse {
+      background: white;
+      color: var(--brand-blue);
+      border-radius: var(--radius-pill);
+      font-weight: 700;
+      padding: 12px 20px;
+      text-decoration: none;
+    }
+    .btn-inverse:hover {
+      background: #f1f5f8;
+    }
+
+    /* Content */
+    .section {
+      padding: 50px 20px;
+      max-width: 1200px;
+      margin: auto;
+    }
+    .lede {
+      text-align: center;
+      font-size: 17px;
+      color: #2a2f38;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+
+    /* Cards */
+    .cards {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    @media (min-width: 768px) {
+      .cards { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card__accent {
+      height: 4px;
+      width: 100%;
+    }
+    .card__accent--red { background: var(--brand-red); }
+    .card__accent--blue { background: var(--brand-blue); }
+    .card__accent--green { background: var(--brand-green); }
+
+    .card__title {
+      padding: 18px 20px 6px;
+      font-weight: 700;
+      font-size: 20px;
+    }
+    .card__title--red { color: var(--brand-red); }
+    .card__title--blue { color: var(--brand-blue); }
+    .card__title--green { color: var(--brand-green); }
+
+    .card__body {
+      padding: 0 20px 20px;
+      font-size: 15px;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    .card__footer {
+      padding: 20px;
+    }
+
+    .btn-red, .btn-blue, .btn-green {
+      display: inline-block;
+      padding: 12px 18px;
+      border-radius: var(--radius-pill);
+      color: white;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .btn-red { background: var(--brand-red); }
+    .btn-blue { background: var(--brand-blue); }
+    .btn-green { background: var(--brand-green); }
+    .btn-red:hover, .btn-blue:hover, .btn-green:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Footer */
+    .site-footer {
+      background: var(--bg-soft);
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 40px 20px;
+      color: var(--muted);
+    }
+    .site-footer a { font-weight: 600; color: var(--brand-blue); }
+  </style>
+</head>
+
+<body>
+  <header class="site-header">
+    <div class="header-bar">
+      <div class="brand">
+        <img class="brand__logo" src="../public/images/logoNew.png" alt="Florida Early Learning Logo" />
+        <span class="brand__env">DEV Family Portal</span>
+      </div>
+      <nav>
         <ul class="nav-actions">
-          <li>
-            <a class="btn btn-outline" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" aria-label="Sign in">
-              <span class="icon-user" aria-hidden="true"></span>
-              <span>Sign In</span>
-            </a>
-          </li>
-          <li>
-            <a class="btn btn-primary" id="signUpButton" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignUp" aria-label="Sign up">
-              <span class="icon-plus-user" aria-hidden="true"></span>
-              <span>Sign Up</span>
-            </a>
-          </li>
+          <li><a class="btn btn-outline" href="signin.html" aria-label="Sign in">Sign In</a></li>
+          <li><a class="btn btn-inverse" href="signup.html" aria-label="Sign up">Sign Up</a></li>
         </ul>
       </nav>
     </div>
   </header>
 
-  <main id="main">
-    <!-- Hero -->
+  <main>
     <section class="hero">
-      <img class="hero__image" src="../Early Learning Family Portal_ Home_files/OELsliderimage.jpg" alt="Florida Early Learning Family Portal Hero Image" />
-      <div class="hero__overlay-card hidden-xs" role="complementary" aria-label="Quick sign-in">
+      <img class="hero__image" src="../public/images/OELsliderimage.jpg" alt="Hero Image" />
+      <div class="hero__overlay-card hidden-xs">
         <h2>Welcome to <strong>Florida's Early Learning Family Portal</strong></h2>
-        <p class="subtle">Already have a Family Portal account?</p>
-        <a class="btn btn-inverse" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn" aria-label="Sign in here">
-          <span>Sign in here</span>
-          <span class="icon-arrow" aria-hidden="true"></span>
-        </a>
+        <p>Already have a Family Portal account?</p>
+        <a class="btn btn-inverse" href="signin.html">Sign in here →</a>
       </div>
     </section>
 
-    <!-- Intro -->
     <section class="section">
-      <div class="container">
-        <p class="lede">
-          You will find information here about Florida’s early learning programs. You can also apply for School Readiness (child care assistance) and Voluntary Prekindergarten Education services online by clicking on an <strong>Apply for</strong> button below.
-        </p>
+      <p class="lede">You will find information here about Florida’s early learning programs. You can also apply for School Readiness (child care assistance) and Voluntary Prekindergarten Education services online by clicking on an <strong>Apply for</strong> button below.</p>
 
-        <!-- Cards -->
-        <div class="cards">
-          <!-- CCR&R -->
-          <article class="card">
-            <div class="card__accent card__accent--red" aria-hidden="true"></div>
-            <h3 class="card__title card__title--red">Resource &amp; Referral</h3>
-            <p class="card__body">
-              Florida’s Child Care Resource and Referral Network (CCR&amp;R) helps families locate quality child care and early education programs. Trained specialists offer information about local options and develop customized lists based on your family’s specific needs. Financial assistance strategies and referrals to other community resources and programs are also available.
-            </p>
-            <div class="card__footer">
-              <a class="btn btn-red" href="https://www.fldoe.org/schools/early-learning/parents/ccr-r.stml" target="_blank" rel="noopener">
-                <span>Learn More About CCR&amp;R</span>
-                <span class="icon-arrow" aria-hidden="true"></span>
-              </a>
-            </div>
-          </article>
+      <div class="cards">
+        <article class="card">
+          <div class="card__accent card__accent--red"></div>
+          <h3 class="card__title card__title--red">Resource &amp; Referral</h3>
+          <p class="card__body">
+            Florida’s Child Care Resource and Referral Network (CCR&amp;R) helps families locate quality child care and early education programs. Trained specialists offer information about local options and develop customized lists based on your family’s specific needs. Financial assistance strategies and referrals to other community resources and programs are also available.
+          </p>
+          <div class="card__footer">
+            <a class="btn-red" href="https://www.fldoe.org/schools/early-learning/parents/ccr-r.stml" target="_blank">Learn More About CCR&amp;R</a>
+          </div>
+        </article>
 
-          <!-- SR -->
-          <article class="card">
-            <div class="card__accent card__accent--blue" aria-hidden="true"></div>
-            <h3 class="card__title card__title--blue">School Readiness</h3>
-            <p class="card__body">
-              Florida’s School Readiness Program (SR) offers financial assistance to eligible low-income families for early education and care so they can become financially self-sufficient and their young children can be successful in school. Services vary by need and may include extended day care, after-school, or school-age care.
-            </p>
-            <div class="card__footer">
-              <a class="btn btn-blue" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn">
-                <span>Apply for School Readiness</span>
-                <span class="icon-arrow" aria-hidden="true"></span>
-              </a>
-            </div>
-          </article>
+        <article class="card">
+          <div class="card__accent card__accent--blue"></div>
+          <h3 class="card__title card__title--blue">School Readiness</h3>
+          <p class="card__body">
+            Florida’s School Readiness Program (SR) offers financial assistance to eligible low-income families for early education and care so they can become financially self-sufficient and their young children can be successful in school.
+          </p>
+          <div class="card__footer">
+            <a class="btn-blue" href="signin.html">Apply for School Readiness</a>
+          </div>
+        </article>
 
-          <!-- VPK -->
-          <article class="card">
-            <div class="card__accent card__accent--green" aria-hidden="true"></div>
-            <h3 class="card__title card__title--green">VPK</h3>
-            <p class="card__body">
-              Florida’s Voluntary Prekindergarten Education Program (VPK) is a free educational program that prepares 4-year-olds for kindergarten and beyond. Children must live in Florida and be 4 on or before September 1 of the school year they enroll. Parents may choose from private child care centers or public schools, including school-year or summer programs. VPK-SIS is available for eligible children with special needs.
-            </p>
-            <div class="card__footer">
-              <a class="btn btn-green" href="https://doe-app-d-eu-fp-001.azurewebsites.net/SsoAccount/SignIn">
-                <span>Apply for Voluntary Prekindergarten</span>
-                <span class="icon-arrow" aria-hidden="true"></span>
-              </a>
-            </div>
-          </article>
-        </div>
+        <article class="card">
+          <div class="card__accent card__accent--green"></div>
+          <h3 class="card__title card__title--green">VPK</h3>
+          <p class="card__body">
+            Florida’s Voluntary Prekindergarten Education Program (VPK) is a free educational program that prepares 4-year-olds for kindergarten and beyond. Children must live in Florida and be 4 on or before September 1 of the school year they enroll.
+          </p>
+          <div class="card__footer">
+            <a class="btn-green" href="signin.html">Apply for Voluntary Prekindergarten</a>
+          </div>
+        </article>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
   <footer class="site-footer">
-    <div class="container footer-grid">
-      <p>
-        Please contact your
-        <a href="https://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx" target="_blank" rel="noopener">early learning coalition</a>
-        for immediate assistance.
-      </p>
-      <p>
-        This site is best viewed with Microsoft Edge. Download the latest version of
-        <a target="_blank" rel="noopener" href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a>.
-      </p>
-      <p>
-        If you are using an Apple device (iPad, iPhone, Mac), please download and use
-        <a target="_blank" rel="noopener" href="https://itunes.apple.com/us/app/chrome-web-browser-by-google/id535886823?mt=8">Google Chrome</a>
-        to complete your application.
-      </p>
-    </div>
+    <p>
+      Please contact your <a href="https://www.floridaearlylearning.com/parents/find_quality_child_care/locate_a_child_care_resource_referral_program/countys_early_learning_coalition.aspx" target="_blank">early learning coalition</a> for immediate assistance.
+    </p>
+    <p>This site is best viewed with Microsoft Edge. Download <a href="https://www.microsoft.com/en-us/edge" target="_blank">Microsoft Edge</a>.</p>
+    <p>If you are using an Apple device, please use <a href="https://itunes.apple.com/us/app/chrome-web-browser-by-google/id535886823?mt=8" target="_blank">Google Chrome</a> to complete your application.</p>
   </footer>
 </body>
 </html>

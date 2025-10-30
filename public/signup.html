@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sign up | Early Learning Family Portal</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      :root{
+        --brand-blue:#01689b; --ink:#161c24; --muted:#6b7280; --bg:#ffffff; --panel-bg:#f6f8fb;
+        --card:#fff; --border:#e6e9ef; --radius:12px; --focus:0 0 0 3px rgba(1,104,155,0.2);
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%;margin:0;font-family:"Segoe UI", Roboto, Arial, sans-serif;color:var(--ink);background:var(--panel-bg)}
+  a{color:var(--brand-blue);text-decoration:none}
+  /* no underline on hover for buttons/links */
+  a:hover{text-decoration:none}
+
+      /* Two-column shell: illustration + panel */
+      .shell{min-height:100dvh;display:grid;grid-template-columns:60% 40%;grid-template-areas:"image api"}
+      .image-panel{grid-area:image;background-color:#fff;background-image:url('https://sts.fldoesso.org/adfs/portal/illustration/illustration.png');background-repeat:no-repeat;background-position:right top;background-size:cover}
+      .api-panel{grid-area:api;padding:40px 36px;display:flex;flex-direction:column;align-items:stretch;overflow-y:auto;background:linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%)}
+
+      /* Header inside right panel */
+      .panel-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+      .brand{display:flex;gap:12px;align-items:center}
+      .brand__logo{width:44px;height:44px;border-radius:8px;background:#e9f4fb;color:var(--brand-blue);display:grid;place-items:center;font-weight:800}
+      .brand__name{font-weight:700;color:var(--brand-blue)}
+
+      /* Form card */
+      .form-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:22px;box-shadow:0 10px 30px rgba(16,24,40,0.06)}
+      h1{margin:0 0 6px;font-size:22px}
+      .lede{color:var(--muted);margin:0 0 16px}
+
+      .field{display:flex;flex-direction:column;margin-bottom:12px}
+      label{font-size:13px;margin-bottom:6px;color:var(--muted)}
+      input[type="text"],input[type="email"],input[type="password"]{padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:15px}
+      input[type="text"]:focus,input[type="email"]:focus,input[type="password"]:focus{outline:none;box-shadow:var(--focus)}
+
+      .actions{display:flex;gap:12px;margin-top:14px}
+      .btn{display:inline-block;padding:10px 14px;border-radius:10px;font-weight:700;border:none;cursor:pointer}
+      .btn-primary{background:var(--brand-blue);color:#fff}
+      .btn-ghost{background:#fff;border:1px solid var(--border);color:var(--ink)}
+
+      .small{font-size:13px;color:var(--muted);margin-top:12px}
+
+      /* Footer */
+      .panel-footer{margin-top:auto;padding-top:18px;font-size:13px;color:var(--muted);text-align:left}
+
+      @media (max-width:900px){
+        .shell{grid-template-columns:50% 50%}
+        .image-panel{background-position:center top}
+      }
+      @media (max-width:640px){
+        .shell{grid-template-columns:0% 100%}
+        .image-panel{display:none}
+        .api-panel{padding:28px}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <div class="image-panel" aria-hidden="true"></div>
+
+      <section class="api-panel" role="main" aria-label="Sign up panel">
+        <div class="panel-header">
+          <div class="brand" aria-label="Application">
+            <div class="brand__logo" aria-hidden="true">EL</div>
+            <div class="brand__name">Early Learning Family Portal</div>
+          </div>
+          <div><a href="./" class="btn btn-ghost" style="padding:8px 12px;border-radius:8px;font-weight:600">Back</a></div>
+        </div>
+
+        <div class="form-card" aria-labelledby="signup-heading">
+          <h1 id="signup-heading">Create an account</h1>
+          <p class="lede">Create an account to access family services and view program information.</p>
+
+          <form id="signup-form" action="#" method="post" novalidate>
+            <div class="field">
+              <label for="fullName">Full name</label>
+              <input id="fullName" name="fullName" type="text" placeholder="Jane Parent" required />
+            </div>
+
+            <div class="field">
+              <label for="email">Email address</label>
+              <input id="email" name="email" type="email" placeholder="name@example.com" required />
+            </div>
+
+            <div class="field">
+              <label for="username">Username</label>
+              <input id="username" name="username" type="text" placeholder="99-your-school@edu.com" required />
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              <input id="password" name="password" type="password" placeholder="Choose a strong password" required />
+            </div>
+
+            <div class="field">
+              <label for="confirm">Confirm password</label>
+              <input id="confirm" name="confirm" type="password" placeholder="Re-enter password" required />
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="btn btn-primary">Create account</button>
+              <a href="./" class="btn btn-ghost" role="button">Cancel</a>
+            </div>
+
+            <p class="small">By creating an account you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+          </form>
+        </div>
+
+        <div class="panel-footer">Need help? Contact support at <a href="mailto:support@floridaearlylearning.com">support@floridaearlylearning.com</a></div>
+      </section>
+    </div>
+  </body>
+</html>
