@@ -31,8 +31,8 @@ app.use(express.json());
 // Parse URL-encoded bodies
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static files from public directory
-app.use(express.static('public'));
+// Serve static files from public directory (absolute path for IIS/iisnode)
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Handle favicon requests to avoid unnecessary errors in logs
 app.get('/favicon.ico', (req, res) => res.status(204).end());
