@@ -250,7 +250,7 @@
         <span class="brand__env">DEV Family Portal</span>
       </div>
       <nav>
-        <ul class="nav-actions">
+        <ul class="nav-actions" id="nav-actions">
           <li><a class="btn btn-outline" href="signin.html" aria-label="Sign in">Sign In</a></li>
           <li><a class="btn btn-inverse" href="signup.html" aria-label="Sign up">Sign Up</a></li>
         </ul>
@@ -316,4 +316,35 @@
     <p>If you are using an Apple device, please use <a href="https://itunes.apple.com/us/app/chrome-web-browser-by-google/id535886823?mt=8" target="_blank">Google Chrome</a> to complete your application.</p>
   </footer>
 </body>
+  <script>
+    (function(){
+      async function isAuthenticated(){
+        try{
+          const r = await fetch('/.auth/me',{credentials:'include'});
+          if(!r.ok) return false;
+          const j = await r.json();
+          return Array.isArray(j) && j.length>0 ? j[0] : false;
+        }catch(e){return false}
+      }
+      function clearClientStorage(){
+        try{localStorage.clear();sessionStorage.clear();}catch(e){}
+        document.cookie.split(';').forEach(function(c){var name=c.split('=')[0].trim();if(!name) return;document.cookie = name+'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';});
+      }
+      function signOut(){
+        clearClientStorage();
+        // Use Easy Auth logout which will clear server cookies and redirect back to index
+        window.location.href = '/.auth/logout?post_logout_redirect_uri=/index.html';
+      }
+      document.addEventListener('DOMContentLoaded', async function(){
+        var nav = document.getElementById('nav-actions'); if(!nav) return;
+        var user = await isAuthenticated();
+        if(user){
+          nav.innerHTML = '<li><button id="signout" class="btn btn-outline">Sign Out</button></li>';
+          document.getElementById('signout').addEventListener('click', signOut);
+        } else {
+          // default already shows Sign In / Sign Up; keep as-is
+        }
+      });
+    })();
+  </script>
 </html>
