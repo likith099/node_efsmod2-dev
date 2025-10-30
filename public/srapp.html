@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>School Readiness Pre-Qualification</title>
+  <link rel="stylesheet" href="../public/css/profile.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-bar">
+      <div class="brand">
+        <img class="brand__logo" src="/images/logoNew.png" alt="Florida Early Learning Logo" />
+        <span class="brand__env">DEV Family Portal</span>
+      </div>
+      <nav>
+        <ul class="nav-actions" id="nav-actions">
+          <li><a class="btn btn-outline" href="signin.html" aria-label="Sign in">Sign In</a></li>
+          <li><a class="btn btn-inverse" href="signup.html" aria-label="Sign up">Sign Up</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="section">
+      <div class="container">
+        <h1 style="margin-top:0;">School Readiness Pre-Qualification</h1>
+        <p class="muted">Answer the short questions below to see whether you may qualify for School Readiness assistance.</p>
+
+        <form id="sr-form" class="panel" novalidate>
+          <!-- Q1 -->
+          <div style="margin-bottom:16px">
+            <label class="title">1. Do you have children in your home younger than 13 years of age in need of child care? <span class="muted">*</span></label>
+            <div style="margin-top:8px">
+              <label><input type="radio" name="q1" value="yes" required> Yes</label>
+              <span style="margin:0 12px"></span>
+              <label><input type="radio" name="q1" value="no"> No</label>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div style="margin-bottom:16px">
+            <label class="title">2. How many total adults and children live in your household? <span class="muted">*</span></label>
+            <div style="margin-top:8px">
+              <input id="q2" name="q2" type="number" min="1" placeholder="Total people in household" style="padding:10px;border:1px solid var(--border);border-radius:6px;width:180px;" required>
+            </div>
+            <div class="muted" style="margin-top:6px;font-size:13px">(Includes spouses, former spouses, persons related by blood or marriage, and others residing together.)</div>
+          </div>
+
+          <!-- Q3 -->
+          <div style="margin-bottom:16px">
+            <label class="title">3. Please select family size</label>
+            <div style="margin-top:8px">
+              <select id="q3" name="q3" style="padding:10px;border:1px solid var(--border);border-radius:6px;min-width:220px">
+                <option value="">-- select family size --</option>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10+</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div style="margin-bottom:16px">
+            <label class="title">4. Check all that apply: (Must check at least one) <span class="muted">*</span></label>
+            <div style="margin-top:8px">
+              <label><input type="checkbox" name="q4" value="65plus"> I am 65 years of age or older.</label><br>
+              <label><input type="checkbox" name="q4" value="single_employed"> I am a single parent currently employed or attending school for at least 20 hours per week.</label><br>
+              <label><input type="checkbox" name="q4" value="two_parent_work"> I am a two-parent family that works or attends school for a combined total of at least 40 hours per week.</label><br>
+              <label><input type="checkbox" name="q4" value="single_exempt_disability"> I am a single parent who is exempt from work due to a disability.</label><br>
+              <label><input type="checkbox" name="q4" value="two_parent_exempt_disability"> I am a two-parent family wherein one or both parents are exempt from work due to a disability.</label><br>
+              <label><input type="checkbox" name="q4" value="referral"> I have a child care authorization form (referral) from an authorized referring agency.</label><br>
+              <label><input type="checkbox" name="q4" value="relative_caregiver"> I receive Relative Caregiver benefits for the child(ren) requiring care.</label><br>
+              <label><input type="checkbox" name="q4" value="iep"> I have a child that is aged 3 to kindergarten entry who has an IEP from the local school district.</label><br>
+              <label><input type="checkbox" name="q4" value="none"> None of the above apply.</label>
+            </div>
+          </div>
+
+          <!-- Q5 -->
+          <div style="margin-bottom:16px">
+            <label class="title">5. I am currently receiving or have previously received school readiness services with another early learning coalition.</label>
+            <div style="margin-top:8px">
+              <label><input type="radio" name="q5" value="yes"> Yes</label>
+              <span style="margin:0 12px"></span>
+              <label><input type="radio" name="q5" value="no"> No</label>
+            </div>
+          </div>
+
+          <div style="margin-top:16px;display:flex;gap:12px;align-items:center">
+            <button type="submit" class="btn btn-primary">Check Qualification</button>
+            <button type="button" id="clear-btn" class="btn btn-outline">Clear</button>
+          </div>
+
+          <div id="sr-result" style="margin-top:20px;display:none" class="panel"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p class="muted">If you believe you qualify, contact your local early learning coalition for next steps.</p>
+  </footer>
+
+  <script>
+    (function(){
+      async function isAuthenticated(){
+        try{
+          const r = await fetch('/.auth/me',{credentials:'include'});
+          if(!r.ok) return false;
+          const j = await r.json();
+          return Array.isArray(j) && j.length>0 ? j[0] : false;
+        }catch(e){return false}
+      }
+      function clearClientStorage(){ try{localStorage.clear();sessionStorage.clear();}catch(e){} document.cookie.split(';').forEach(function(c){var name=c.split('=')[0].trim();if(!name) return;document.cookie = name+'=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/';}); }
+      function signOut(){ clearClientStorage(); window.location.href = '/.auth/logout?post_logout_redirect_uri=/index.html'; }
+
+      // nav handling (show profile + sign out when authenticated)
+      document.addEventListener('DOMContentLoaded', async function(){
+        var nav = document.getElementById('nav-actions'); if(!nav) return;
+        var user = await isAuthenticated();
+        if(user){
+          nav.innerHTML = '<li><a id="profile-link" class="btn btn-inverse" href="/profile.html">My Profile</a></li>' +
+                          '<li><button id="signout" class="btn btn-outline">Sign Out</button></li>';
+          document.getElementById('signout').addEventListener('click', signOut);
+        }
+
+        // form logic
+        var form = document.getElementById('sr-form');
+        var result = document.getElementById('sr-result');
+        var clearBtn = document.getElementById('clear-btn');
+
+        function showResult(message, success){
+          result.style.display = 'block';
+          result.innerHTML = '<h3 class="card__title">' + (success? 'You may qualify' : 'You may not qualify') + '</h3>' +
+                              '<div class="card__body">' + message + '</div>';
+        }
+
+        clearBtn.addEventListener('click', function(){ form.reset(); result.style.display='none'; result.innerHTML=''; });
+
+        form.addEventListener('submit', function(e){
+          e.preventDefault();
+          result.style.display='none'; result.innerHTML='';
+
+          // basic validation
+          var q1 = form.q1.value;
+          var q2 = parseInt((form.q2 && form.q2.value) || '0',10);
+          var q4Nodes = Array.from(form.querySelectorAll('input[name="q4"]'));
+          var q4Checked = q4Nodes.filter(n=>n.checked).map(n=>n.value);
+          var q5 = form.q5 && form.q5.value;
+
+          if(!q1){ alert('Please answer question 1.'); return; }
+          if(!q2 || q2 < 1){ alert('Please enter a valid household size for question 2.'); return; }
+          if(q4Checked.length === 0){ alert('Please select at least one option for question 4.'); return; }
+
+          // Simple qualification rule:
+          // - Must have children (q1 === 'yes')
+          // - And either at least one Q4 condition OR already received SR services (q5 === 'yes')
+          if(q1 !== 'yes'){
+            showResult('Since there are no children under 13 in the household, School Readiness is not applicable.', false);
+            return;
+          }
+
+          if(q4Checked.length > 0 || q5 === 'yes'){
+            showResult('Based on your answers, you may qualify for School Readiness assistance. Please contact your local early learning coalition to apply and verify eligibility.', true);
+          } else {
+            showResult('Based on your answers, it does not appear you meet the basic pre-qualification criteria. You may still contact your local early learning coalition for guidance.', false);
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
