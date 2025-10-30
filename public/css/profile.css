@@ -128,7 +128,8 @@ a:hover { text-decoration: none; }
 .header-bar { padding: 0 20px; }
 
 /* Ensure main content clears the fixed header (matches snapshot spacing) */
-main { padding-top: 65pt; }
+/* Increased padding to fully clear the fixed header across viewports */
+main { padding-top: 110px; }
 
 /* Page header / breadcrumb style used in snapshot */
 .page-header.well { display:flex; align-items:center; margin: 0 -26px 20px; border-radius:0; border-right:none; border-left:none; box-shadow:none; padding:1rem 3rem; background:#fff; }
@@ -180,7 +181,8 @@ table.display.table-hover td.title { padding:16px 8px; font-size:12px; color:#4B
 @media (max-width:767px) {
   .fontFP { font-size:14px !important; }
   .page-header.well { padding:1rem; margin-bottom:1rem; }
-  main { padding-top: 90pt; }
+  /* mobile: give extra space for taller header */
+  main { padding-top: 120px; }
 }
 
 /* End adapted snapshot styles */
