@@ -23,6 +23,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve static files from public directory
 app.use(express.static('public'));
 
+// Handle favicon requests to avoid unnecessary errors in logs
+app.get('/favicon.ico', (req, res) => res.status(204).end());
+
 // Ensure database schema (best effort)
 if (process.env.SQL_SERVER || process.env.SQL_CONNECTION_STRING) {
   ensureIntakeTable().catch((err) => {
