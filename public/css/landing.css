@@ -1,6 +1,6 @@
 /* Minimal CSS to replace Bootstrap/jQueryUI usage on the landing page */
 * { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif; color: #2D2D2D; }
+html, body { margin: 0; padding: 0; width: 100%; min-height: 100%; overflow-x: hidden; font-family: Arial, "Segoe UI", Helvetica, Roboto, "Helvetica Neue", "Noto Sans", sans-serif; color: #2D2D2D; background: #FFFFFF; }
 img { max-width: 100%; height: auto; display: inline-block; }
 a { color: #01689B; text-decoration: none; }
 a:hover { text-decoration: underline; }
@@ -23,7 +23,12 @@ a:hover { text-decoration: underline; }
 @media (max-width: 767px) { .hidden-sm, .hidden-md, .hidden-lg, .hidden-xl, .hidden-xxl { display: block; } }
 
 /* Navbar (inline styles kept on HTML, but base tweaks here) */
-nav { line-height: 1; }
+nav { line-height: 1; width: 100%; top: 0; left: 0; padding: 1rem !important; display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: wrap !important; }
+nav img { max-height: 44px; height: auto; }
+nav .navbar-btn { margin-left: 8px; }
+
+/* Compensate for fixed nav overlap */
+#main { padding-top: 120px !important; }
 
 /* Buttons */
 .btn { display: inline-flex; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 3px; padding: 6px 12px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: none; }
@@ -51,9 +56,15 @@ nav { line-height: 1; }
   .panel-height { min-height: 230px; }
   .panel-foot { position: absolute; bottom: 0; }
   .panel-bp { padding-bottom: 0; }
-  .signin { bottom: -100px; height: auto; background: #01689B; padding: 32px; position: absolute; z-index: 1; }
+  .signin { bottom: -100px; right: 5%; height: auto; background: #01689B; padding: 32px; position: absolute; z-index: 1; max-width: 460px; border-radius: 4px; }
   .toprem { margin-top: 12rem; }
 }
+
+/* Force the second row (cards) side-by-side on all viewports */
+.cards-row > .col-xs-12 { width: 33.3333%; }
+.cards-row { column-gap: 0; row-gap: 24px; }
+.cards-row .panel { height: 100%; display: flex; flex-direction: column; }
+.cards-row .panel-foot { margin-top: auto; }
 
 /* Footer */
 .container-fluid { width: 100%; padding-left: 15px; padding-right: 15px; }
@@ -62,3 +73,19 @@ nav { line-height: 1; }
 
 /* Accessibility tweaks */
 [role="button"] { cursor: pointer; }
+
+/* Headings */
+h1,h2,h3,h4,h5,h6 { margin: 0 0 0.5rem 0; font-weight: 700; color: inherit; }
+
+/* Utility colors used inline in HTML */
+.text-primary { color: #01689B; }
+.bg-primary { background: #01689B; color: #FFFFFF; }
+.bg-light { background: #F8F8F8; }
+
+/* Helpers for spacing if needed */
+.mb-0 { margin-bottom: 0 !important; }
+.mb-1 { margin-bottom: 0.25rem !important; }
+.mb-2 { margin-bottom: 0.5rem !important; }
+.mb-3 { margin-bottom: 1rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.mb-5 { margin-bottom: 2rem !important; }
