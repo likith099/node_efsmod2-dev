@@ -2,8 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const fetch = globalThis.fetch || ((...args) => import('node-fetch').then(({ default: fetchFn }) => fetchFn(...args)));
-const { ensureIntakeTable, upsertIntakeForm } = require('./config/database');
+const path = require('path');
 require('dotenv').config();
+
+// Optional database module (graceful fallback if missing)
+let ensureIntakeTable = async () => {};
+let upsertIntakeForm = null;
+try {
+  const db = require('./config/database');
+  ensureIntakeTable = db.ensureIntakeTable || ensureIntakeTable;
+  upsertIntakeForm = db.upsertIntakeForm || null;
+} catch (err) {
+  console.warn('[startup] Database module not found, continuing without DB.');
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -27,28 +38,31 @@ app.use(express.static('public'));
 app.get('/favicon.ico', (req, res) => res.status(204).end());
 
 // Ensure database schema (best effort)
-if (process.env.SQL_SERVER || process.env.SQL_CONNECTION_STRING) {
+if ((process.env.SQL_SERVER || process.env.SQL_CONNECTION_STRING) && typeof ensureIntakeTable === 'function') {
   ensureIntakeTable().catch((err) => {
     console.error('Failed to ensure intake table:', err.message);
+    console.error('Application will continue without database functionality');
   });
+} else {
+  console.log('[startup] No database configuration - running without DB');
 }
 
 // Routes
 app.get('/', (req, res) => {
-  // Serve the FL WINS homepage
-  res.sendFile(__dirname + '/public/flwins.html');
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // API status endpoint
 app.get('/api/status', (req, res) => {
   res.json({
-    message: 'Welcome to FLWINS2 Development Server',
+    message: 'Welcome to EFSMOD Development Server',
     status: 'running',
     environment: process.env.NODE_ENV || 'development',
     timestamp: new Date().toISOString()
   });
 });
 
+// Health endpoint for uptime checks
 app.get('/health', (req, res) => {
   res.status(200).json({
     status: 'healthy',
@@ -59,33 +73,25 @@ app.get('/health', (req, res) => {
 
 // Authentication routes
 app.get('/signin', (req, res) => {
-  // Redirect to Azure AD login
   res.redirect('/.auth/login/aad');
 });
 
 app.get('/create-account', (req, res) => {
-  // Redirect to Azure AD login (same as sign in for Azure AD)
   res.redirect('/.auth/login/aad');
 });
 
 app.get('/signout', (req, res) => {
-  // Redirect to Azure AD logout
   res.redirect('/.auth/logout');
 });
 
-// Serve FL WINS HTML page
+// Optional: legacy pages
 app.get('/flwins.html', (req, res) => {
-  res.sendFile(__dirname + '/public/flwins.html');
-});
-
-// Handle the incorrect redirect URL - redirect to flwins.html
-app.get('/flwins2.html', (req, res) => {
-  res.redirect('/flwins.html');
+  res.sendFile(path.join(__dirname, 'public', 'flwins.html'));
 });
 
 // Profile page route
 app.get('/profile', (req, res) => {
-  res.sendFile(__dirname + '/public/profile.html');
+  res.sendFile(path.join(__dirname, 'public', 'profile.html'));
 });
 
 // Helper to extract claim values
@@ -321,6 +327,10 @@ app.post('/api/intake', express.json(), async (req, res) => {
 
     if (!process.env.SQL_SERVER && !process.env.SQL_CONNECTION_STRING) {
       return res.status(500).json({ error: 'SQL Database configuration missing on server.' });
+    }
+
+    if (!upsertIntakeForm || typeof upsertIntakeForm !== 'function') {
+      return res.status(501).json({ error: 'Database module not available on server.' });
     }
 
     const body = req.body || {};

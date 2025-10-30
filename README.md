@@ -52,22 +52,34 @@ PORT=3000
 - `GET /health` - Health check endpoint
 - Static files served from `/public` directory
 
-## Azure App Service Deployment
+## Azure App Service Deployment (Windows)
 
-This application is configured for Azure App Service with:
+This application is configured for Azure Windows App Service with:
 
-- **Runtime Stack**: Node.js 22 LTS
-- **Startup Command**: `npm start`
-- **Web.config** for IIS integration
-- **Package.json** with proper Node.js version specification
+- Runtime: Node.js 22 LTS
+- Windows + IIS + iisnode via `web.config`
+- Package.json pins Node 22.x
+- Express serves `public/index.html` at `/`
 
 ### Deployment Steps
 
-1. Create an Azure App Service with Node.js 22 runtime
-2. Configure application settings:
+1. Create an Azure App Service (Windows) with Node.js 22 runtime
+2. Configure Application Settings:
    - `NODE_ENV=production`
    - `WEBSITE_NODE_DEFAULT_VERSION=22-lts`
-3. Deploy using your preferred method (Git, VS Code, GitHub Actions, etc.)
+3. Deploy (Git, VS Code, or GitHub Actions)
+4. Browse the site root `/` → should render `public/index.html`
+
+### Health checks
+
+- `GET /health` returns a simple JSON for availability checks
+- `GET /api/status` returns app information
+
+### Database (optional / currently disabled)
+
+- This project deploys without any database requirement.
+- DB integration is optional and guarded at runtime; `/api/intake` returns `501` unless DB module and SQL settings are present.
+- You can later add DB by supplying `SQL_CONNECTION_STRING` (or `SQL_SERVER` + credentials) and a `config/database` module exporting `ensureIntakeTable` and `upsertIntakeForm`.
 
 ## Project Structure
 
