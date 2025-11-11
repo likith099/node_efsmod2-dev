@@ -93,7 +93,8 @@
             </a>
 
 
-            <a class="idp-btn" role="listitem" href="https://flwins.ciamlogin.com/4cc02933-c81d-4fe9-9f71-850984769f51/oauth2/v2.0/authorize?response_type=code+id_token&redirect_uri=https%3A%2F%2Fefsmod2-dev-f4dsd9ffbegededq.canadacentral-01.azurewebsites.net&client_id=f2b62959-157c-4b41-a666-e473118a1e77&scope=openid+profile+email&response_mode=form_post&nonce=1992ddc2856941d3a04b5092fba71685_20251030202332&state=redir%3D%2Findex.html" aria-label="Sign in with FLWINS">
+            <!-- FLWINS IdP: Replace NEW_FLWINS_CLIENT_ID with the actual app registration client ID from the FLWINS (CIAM/B2C) tenant. -->
+            <a class="idp-btn" role="listitem" data-dynamic-redirect="true" href="https://flwins.ciamlogin.com/4cc02933-c81d-4fe9-9f71-850984769f51/oauth2/v2.0/authorize?response_type=code&redirect_uri=https%3A%2F%2Fefsmod2-dev-f4dsd9ffbegededq.canadacentral-01.azurewebsites.net%2F.auth%2Flogin%2Faad%2Fcallback&client_id=2f3d335d-3d91-4159-aa95-b6e4b04a9f03&scope=openid+profile+email&response_mode=form_post&nonce=TEMP_NONCE&state=redir%3D%2Findex.html" aria-label="Sign in with FLWINS">
               <div class="idp-icon" aria-hidden="true"><img src="../public/images/FLWINSssologo.png" alt="FLWINS logo"/></div>
               <div class="idp-text"><span class="idp-title">FLWINS</span><span class="idp-sub">Sign in using your FLWINS account</span></div>
               <div aria-hidden="true">→</div>
@@ -113,29 +114,26 @@
       })();
     </script>
     <script>
-      // Update authorize links at runtime so redirect_uri always matches the app origin.
+      // Dynamic redirect_uri only for anchors marked with data-dynamic-redirect.
+      // This avoids repeated mutation and unintended double-encoding of state.
       (function(){
         function updateIdpLinks(){
-          try{
-            const anchors = document.querySelectorAll('.idp-list a[idp], .idp-list a.idp-btn');
-            const origin = window.location.origin;
-            anchors.forEach(a => {
-              try{
-                const url = new URL(a.href);
-                // replace redirect_uri with current origin + callback path
-                const callback = origin + '/.auth/login/aad/callback';
-                url.searchParams.set('redirect_uri', callback);
-                // ensure state is single-encoded (e.g. redir%3D%2Findex.html)
-                const state = url.searchParams.get('state');
-                if(state){
-                  // decode once then re-encode once to avoid double-encoding
-                  const decoded = decodeURIComponent(state);
-                  url.searchParams.set('state', encodeURIComponent(decoded));
-                }
-                a.href = url.toString();
-              }catch(e){}
-            });
-          }catch(e){}
+          const origin = window.location.origin;
+          const callback = origin + '/.auth/login/aad/callback';
+          const anchors = document.querySelectorAll('a[data-dynamic-redirect="true"]');
+          anchors.forEach(a => {
+            try{
+              const url = new URL(a.href);
+              url.searchParams.set('redirect_uri', callback);
+              // Do NOT touch state here to prevent double-encoding; ensure initial state is single-encoded in markup.
+              // Replace TEMP_NONCE with a generated nonce each page load if hybrid/id_token needed.
+              if(url.searchParams.get('nonce') === 'TEMP_NONCE'){
+                const nonce = 'nonce_' + Math.random().toString(36).slice(2) + Date.now();
+                url.searchParams.set('nonce', nonce);
+              }
+              a.href = url.toString();
+            }catch(e){}
+          });
         }
         if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', updateIdpLinks); else updateIdpLinks();
       })();
