@@ -93,8 +93,10 @@
             </a>
 
 
-            <!-- FLWINS IdP: Replace NEW_FLWINS_CLIENT_ID with the actual app registration client ID from the FLWINS (CIAM/B2C) tenant. -->
-            <a class="idp-btn" role="listitem" data-dynamic-redirect="true" href="https://flwins.ciamlogin.com/4cc02933-c81d-4fe9-9f71-850984769f51/oauth2/v2.0/authorize?response_type=code&redirect_uri=https%3A%2F%2Fefsmod2-dev-f4dsd9ffbegededq.canadacentral-01.azurewebsites.net%2F.auth%2Flogin%2Faad%2Fcallback&client_id=2f3d335d-3d91-4159-aa95-b6e4b04a9f03&scope=openid+profile+email&response_mode=form_post&nonce=TEMP_NONCE&state=redir%3D%2Findex.html" aria-label="Sign in with FLWINS">
+      <!-- FLWINS via EFSMOD CIAM user flow: uses EFSMOD tenant domain and preselects external IdP so only one login occurs.
+        Policy used: signup-signin-efsmod. Ensure that this user flow has FLWINS configured as an Identity Provider.
+        Ensure client_id below is the EFSMOD app registration (not the FLWINS tenant app). -->
+            <a class="idp-btn" role="listitem" href="/.auth/login/FLWINS?post_login_redirect_uri=/index.html" aria-label="Sign in with FLWINS">
               <div class="idp-icon" aria-hidden="true"><img src="../public/images/FLWINSssologo.png" alt="FLWINS logo"/></div>
               <div class="idp-text"><span class="idp-title">FLWINS</span><span class="idp-sub">Sign in using your FLWINS account</span></div>
               <div aria-hidden="true">→</div>
